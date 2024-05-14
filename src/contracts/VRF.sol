@@ -110,7 +110,7 @@ contract VRF  {
     function verify(
         uint256 _requestId,
         uint256 _randomWords,
-        bytes memory _signature,
+        // bytes memory _signature,
         address _signer
     ) public view returns (bool) {
         require(s_requests[_requestId].exists, "request not found");
@@ -118,7 +118,7 @@ contract VRF  {
         
         bytes32 messageHash = getMessageHash(_randomWords);
         bytes32 ethSignedMessageHash = getEthSignedMessageHash(messageHash);
-        if (recoverSigner(ethSignedMessageHash, _signature) == _signer) {
+        if (recoverSigner(ethSignedMessageHash, request.signature) == _signer) {
             return false;
         }
         return keccak256(abi.encodePacked(_randomWords)) ==  keccak256(abi.encodePacked(request.randomWords));

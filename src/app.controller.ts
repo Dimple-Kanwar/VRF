@@ -1,5 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
+import { verifyRandomness } from './interfaces';
 
 @Controller()
 export class AppController {
@@ -15,13 +16,13 @@ export class AppController {
     return await this.appService.generateRandomness();
   }
 
-  @Get('/generate/v2')
-  async GenerateRandomNumberV2(): Promise<{ randomNum: any; }> {
-    return this.appService.generateRandomnessV2();
-  }
-
   @Get('/keys')
   GenerateKey(): { publicKey: string, privateKey: string} {
     return this.appService.generateKey();
+  }
+
+  @Get('/verify')
+  async verify(input:verifyRandomness) {
+    return this.appService.verify(input);
   }
 }

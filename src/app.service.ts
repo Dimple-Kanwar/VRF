@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import {createHash} from "crypto";
+import {createHash, randomUUID} from "crypto";
 import { ec}  from 'elliptic';
-import { ethers } from 'ethers';
+import { AbiCoder, ethers } from 'ethers';
+import { setRandomness, verify } from './blockchain.service';
+import { verifyRandomness } from './interfaces';
+import { getProviderDetails } from './helpers/utils';
 
 
 const EC = new ec('secp256k1');
@@ -23,44 +26,22 @@ export class AppService {
   };
 
 
-  hash = (...args: any[]) => {
-    const sha256 = createHash("sha256");
-    for (const arg of args) {
-      sha256.update(arg);
-    }
-    return sha256.digest().toString("hex");
-  };
-
   generateRandomness = async () => {
-    const randomNum = 1234567890;
+    const randomNum =1234567878899;
     console.log("randomNum: ",randomNum);
-    const hashedRandomNum = this.hash("\x19Ethereum Signed Message:\n32",randomNum.toString());
+    const requestId = randomUUID();
+    const randomNumBytes = Buffer.from(randomNum.toString());
+    console.log("randomNumBytes: ",randomNumBytes);
+    
+    const hashedRandomNum = ethers.keccak256(randomNumBytes);
     console.log("hashedRandomNum: ",hashedRandomNum);
-
-    const signer = new ethers.Wallet(process.env.PRIVATE_KEY, new ethers.JsonRpcProvider("https://data-seed-prebsc-1-s1.binance.org:8545/"));
+    const { signer, provider } = await getProviderDetails();
     console.log("signer: ",signer);
-    const signature = await signer.signMessage(hashedRandomNum);
+    const signature = await signer.signMessage("\x19Ethereum Signed Message:\n32" + hashedRandomNum);
     console.log("signature: ",signature);
-    return { randomNum }
-  }
-
-  generateRandomnessV2 = () => {
-    const keyPair = EC.keyFromPrivate(process.env.PRIVATE_KEY);
-    console.log("keyPair: ", keyPair);
-    const randomNum = Math.random().toPrecision(18);
-    console.log("randomNum: ", randomNum);
-    const hashedRandomNum = this.hash(randomNum.toString());
-    console.log("hashedRandomNum: ", hashedRandomNum);
-    const signature = keyPair.sign(hashedRandomNum);
-    console.log("signature: ", signature);
-    // Export DER encoded signature in Array
-    var derSign = signature.toDER();
-    console.log("derSign: ", derSign);
-    const publicKey = this.getPublicKey(process.env.PRIVATE_KEY!);
-    console.log("publicKey: ", publicKey);
-    const isValid = keyPair.verify(randomNum, signature);
-    console.log("isValid: ", isValid);
-    return { randomNum }
+    // set randomNum in blockchain
+    const tx = await setRandomness({randomNumber: randomNum,requestId,signature,signer})
+    return { randomNum, tx }
   }
 
   generateKey = () => {
@@ -70,6 +51,10 @@ export class AppService {
     const publicKey = keyPair.getPublic(true,'hex');
     console.log("publicKey: ", publicKey)
     return { publicKey, privateKey}
+  }
+
+  verify = async(args: verifyRandomness) => {
+    return await verify(args);
   }
 
 }
