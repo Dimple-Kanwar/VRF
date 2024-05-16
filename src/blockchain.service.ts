@@ -1,11 +1,9 @@
 
 import { setRandomnessInput, verifyRandomness } from './interfaces';
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-
-import { readFile } from 'fs/promises';
-const abi_path = "./artifacts/src/contracts/VRF.sol/VRF.json";
+import { abi } from "./artifacts/src/contracts/VRF.sol/VRF.json";
+// console.log("abi: ",abi);
 import { getProviderDetails } from "./helpers/utils";
-import { Contract } from 'ethers';
+import { Contract, ContractFactory, ethers } from 'ethers';
 
 
 export const verify = async(args: verifyRandomness) => {
@@ -20,9 +18,10 @@ export const verify = async(args: verifyRandomness) => {
   return tx;
 }
 
-export const setRandomness = async (args: setRandomnessInput) => {
+export const setRandomness = async (randomNum,requestId,signature,signer) => {
   const contract = await _getContract();
-    const tx = await contract.setRandomWords(args);
+  // console.log("contract: ", contract)
+    const tx = await contract.setRandomWords(randomNum,requestId,signature,signer);
     console.log("tx: ", tx);
     return tx;
 }
@@ -30,11 +29,12 @@ export const setRandomness = async (args: setRandomnessInput) => {
 const _getContract = async() => {
   // Get signer and provider
   const { signer, provider } = await getProviderDetails();
-  const abi =  await readFile(abi_path, {encoding: "ascii"});
+
   const contract = new Contract(
     process.env.CONTRACT_ADDRESS,
     abi,
-    provider
+    signer
   );
+  contract.connect(signer);
   return contract;
 }

@@ -1,14 +1,16 @@
 import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox";
+require("@nomicfoundation/hardhat-ethers");
 import "dotenv/config";
 
 const config: HardhatUserConfig = {
   defaultNetwork: "localhost",
   networks: {
     localhost: {
-      url: "http://127.0.0.1:8545"
+      url: "http://127.0.0.1:8545",
+      chainId: 31337
     },
     hardhat: {
+      
     }
   },
   solidity: {
@@ -24,7 +26,7 @@ const config: HardhatUserConfig = {
     sources: "./src/contracts",
     tests: "./src/test",
     cache: "./src/cache",
-    artifacts: "./src/artifacts"
+    artifacts: "./src/artifacts",
   },
   mocha: {
     timeout: 40000

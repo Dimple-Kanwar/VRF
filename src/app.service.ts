@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {createHash, randomUUID} from "crypto";
 import { ec}  from 'elliptic';
-import { AbiCoder, ethers } from 'ethers';
+import { ethers,  toBeArray } from 'ethers';
 import { setRandomness, verify } from './blockchain.service';
 import { verifyRandomness } from './interfaces';
 import { getProviderDetails } from './helpers/utils';
@@ -27,20 +27,20 @@ export class AppService {
 
 
   generateRandomness = async () => {
-    const randomNum =1234567878899;
-    console.log("randomNum: ",randomNum);
-    const requestId = randomUUID();
-    const randomNumBytes = Buffer.from(randomNum.toString());
-    console.log("randomNumBytes: ",randomNumBytes);
-    
-    const hashedRandomNum = ethers.keccak256(randomNumBytes);
-    console.log("hashedRandomNum: ",hashedRandomNum);
     const { signer, provider } = await getProviderDetails();
     console.log("signer: ",signer);
-    const signature = await signer.signMessage("\x19Ethereum Signed Message:\n32" + hashedRandomNum);
+    const randomNum =1234567878899;
+    console.log("randomNum: ",randomNum);
+    const requestId = randomUUID(); 
+    const hashedRandomNum = ethers.solidityPackedKeccak256(['uint256'],[randomNum])
+    console.log("hashedRandomNum: ",hashedRandomNum);   
+    const signature = await signer.signMessage(toBeArray(hashedRandomNum))
     console.log("signature: ",signature);
+    // const ethHash = ethers.solidityPackedKeccak256(['string','bytes32'], ["\x19Ethereum Signed Message:\n32", hashedRandomNum]);
+    // console.log("ethHash: ",ethHash);
+   
     // set randomNum in blockchain
-    const tx = await setRandomness({randomNumber: randomNum,requestId,signature,signer})
+    const tx = await setRandomness(randomNum,requestId,signature,signer)
     return { randomNum, tx }
   }
 

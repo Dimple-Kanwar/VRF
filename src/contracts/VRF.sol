@@ -12,7 +12,7 @@ contract VRF  {
         bytes signature;
         uint256 randomWords;
     }
-    mapping(uint256 => RequestStatus) public s_requests; /* requestId --> requestStatus */
+    mapping(uint256 => RequestStatus) private s_requests; /* requestId --> requestStatus */
 
 
     // past requests Id.
@@ -36,7 +36,7 @@ contract VRF  {
 
     function getMessageHash(
         uint256 _randomWords
-    ) public pure returns (bytes32) {
+    ) private  pure returns (bytes32) {
         return keccak256(abi.encodePacked(_randomWords));
     }
 
@@ -51,9 +51,9 @@ contract VRF  {
             exists: true,
             fulfilled: true
         });
-        requestIds.push(requestId);
-        lastRequestId = requestId;
-        return requestId; // requestID is a uint.
+        requestIds.push(_requestId);
+        lastRequestId = _requestId;
+        return _requestId; // requestID is a uint.
     }
 
     function getEthSignedMessageHash(bytes32 _messageHash)
@@ -118,9 +118,8 @@ contract VRF  {
         
         bytes32 messageHash = getMessageHash(_randomWords);
         bytes32 ethSignedMessageHash = getEthSignedMessageHash(messageHash);
-        if (recoverSigner(ethSignedMessageHash, request.signature) == _signer) {
+        if(recoverSigner(ethSignedMessageHash, request.signature) != _signer)
             return false;
-        }
         return keccak256(abi.encodePacked(_randomWords)) ==  keccak256(abi.encodePacked(request.randomWords));
     }
 
