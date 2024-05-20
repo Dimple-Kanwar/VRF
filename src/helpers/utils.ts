@@ -2,8 +2,8 @@ import { ethers } from "ethers";
 import dotenv from "dotenv";
 dotenv.config();
 
-const networkUrl = process.env.PROVIDER_URL;
-const privateKey = process.env.PRIVATE_KEY;
+const networkUrl = process.env.RPC_URL;
+const privateKey = process.env.WALLET_PRIVATE_KEY;
 
 // Get provider details
 export const getProviderDetails = async () => {

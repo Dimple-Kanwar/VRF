@@ -40,7 +40,7 @@ export class AppService {
     // console.log("ethHash: ",ethHash);
    
     // set randomNum in blockchain
-    const tx = await setRandomness(randomNum,requestId,signature,signer)
+    const tx = await setRandomness(randomNum,requestId,signature,signer.address)
     return { randomNum, tx }
   }
 

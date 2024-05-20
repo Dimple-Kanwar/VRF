@@ -18,9 +18,9 @@ export const verify = async(args: verifyRandomness) => {
   return tx;
 }
 
-export const setRandomness = async (randomNum,requestId,signature,signer) => {
+export const setRandomness = async (randomNum: number,requestId: string,signature:string,signer:string) => {
   const contract = await _getContract();
-  // console.log("contract: ", contract)
+  console.log("contract: ", contract)
     const tx = await contract.setRandomWords(randomNum,requestId,signature,signer);
     console.log("tx: ", tx);
     return tx;
