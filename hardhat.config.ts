@@ -3,7 +3,7 @@ import "@nomicfoundation/hardhat-toolbox-viem";
 import "dotenv/config";
 
 const config: HardhatUserConfig = {
-  defaultNetwork: "hardhat",
+  defaultNetwork: "berachainTestnet",
   networks: {
     // for local dev environment
     "berachain-local": {
@@ -17,7 +17,7 @@ const config: HardhatUserConfig = {
         ? [`${process.env.WALLET_PRIVATE_KEY}`]
         : [],
         // gas: "auto",
-      // gasPrice: 10000000000,
+      gasPrice: 10000000000,
     }
   },
   etherscan: {

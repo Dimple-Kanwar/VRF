@@ -18,4 +18,4 @@ deploy contract:
 `npm run deploy:berachain`
 
 verify contract deployment:
-npm run verify CONTRACT_ADDRESS
+npm run verify VRF_CONTRACT_ADDRESS

@@ -1,6 +1,6 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Header, Post } from '@nestjs/common';
 import { AppService } from './app.service';
-import { verifyRandomness } from './interfaces';
+import { GenerateRandomeNumber, verifyRandomness } from './interfaces';
 
 @Controller()
 export class AppController {
@@ -11,9 +11,9 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get('/generate')
-  async GenerateRandomNumber(): Promise<{ randomNum: any; }> {
-    return await this.appService.generateRandomness();
+  @Post('/generate')
+  async GenerateRandomNumber(@Body() body: GenerateRandomeNumber): Promise<{ randomNum: any; }> {
+    return await this.appService.generateRandomness(body.jobId, body.attestation);
   }
 
   @Get('/keys')

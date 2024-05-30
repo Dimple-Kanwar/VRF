@@ -10,7 +10,7 @@ contract VRF  {
         bool exists; // whether a requestId exists
         address signer; // account address of the requester
         bytes signature;
-        uint256 randomWords;
+        bytes randomWords;
     }
     mapping(uint256 => RequestStatus) private s_requests; /* requestId --> requestStatus */
 
@@ -24,7 +24,7 @@ contract VRF  {
         _owner = msg.sender;
     }
 
-// Modifier to check that the caller is the owner of
+    // Modifier to check that the caller is the owner of
     // the contract.
     modifier onlyOwner() {
         require(msg.sender == _owner, "Not owner");
@@ -34,13 +34,24 @@ contract VRF  {
         _;
     }
 
+    function init(uint256 _requestId, address signer) public onlyOwner{
+        s_requests[_requestId] = RequestStatus({
+            randomWords: "",
+            signer: signer,
+            signature: "",
+            exists: true,
+            fulfilled: false
+        });
+        requestIds.push(_requestId);
+    }
+
     function getMessageHash(
-        uint256 _randomWords
+        bytes memory _randomWords
     ) private  pure returns (bytes32) {
         return keccak256(abi.encodePacked(_randomWords));
     }
 
-    function setRandomWords(uint256 _randomWords, bytes memory _signature, address signer, uint256 _requestId) public onlyOwner returns (uint256 requestId) {
+    function setRandomWords(bytes memory _randomWords, bytes memory _signature, address signer, uint256 _requestId) public onlyOwner returns (uint256 requestId) {
         bytes32 messageHash = getMessageHash(_randomWords);
         bytes32 ethSignedMessageHash = getEthSignedMessageHash(messageHash);
         require(recoverSigner(ethSignedMessageHash, _signature) == signer, "Signer mismatch");
@@ -51,7 +62,6 @@ contract VRF  {
             exists: true,
             fulfilled: true
         });
-        requestIds.push(_requestId);
         lastRequestId = _requestId;
         return _requestId; // requestID is a uint.
     }
@@ -109,7 +119,7 @@ contract VRF  {
 
     function verify(
         uint256 _requestId,
-        uint256 _randomWords,
+        bytes memory _randomWords,
         // bytes memory _signature,
         address _signer
     ) public view returns (bool) {
@@ -126,7 +136,7 @@ contract VRF  {
     // to check the request status of random number call.
     function getRequestStatus(
         uint256 _requestId
-    ) public  view returns (bool fulfilled, uint256 randomWords) {
+    ) public  view returns (bool fulfilled, bytes memory randomWords) {
         require(s_requests[_requestId].exists, "request not found");
         RequestStatus memory request = s_requests[_requestId];
         return (request.fulfilled, request.randomWords);
