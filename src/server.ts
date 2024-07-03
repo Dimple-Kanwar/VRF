@@ -17,5 +17,5 @@ app.listen(PORT, () => console.log(`⚡Server is running here 👉 http://localh
 
 const generate_config = (config_data:any) => {
     //save updated config data in config.json file
-   return  writeFileSync("./app/config.json", JSON.stringify(config_data), {encoding: "utf8"});
+   return  writeFileSync("/app/config.json", JSON.stringify(config_data), {encoding: "utf8"});
 }

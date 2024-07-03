@@ -4,7 +4,7 @@ import { readFileSync } from 'fs';
 import { abi } from "./jobManager.json";
 import "dotenv/config";
 import {berachain} from "./constants.json";
-import { gasKey,rewardsAddress, userKey} from "../app/config.json";
+import { gasKey,rewardsAddress, userKey} from "/app/config.json";
 const abiCoder = ethers.AbiCoder.defaultAbiCoder();
 
 // Get provider details
@@ -21,11 +21,11 @@ const getAttestation = async (data:string, jobId:any) => {
     // read attestation private key from a file
     const attestation_private_key = readFileSync("/app/secp.sec", { encoding: "hex" });
     // const attestation_private_key = "0x9fda92bd4fb11108438a426ec845debfd9f4e88c6aa3fcad69ca3f4560ba2a22";
-    // const input = 8943840;
+    const input = "0x1234";
     // encode data, input and jobId to get it signed with the attestation private key
     const encodedData = abiCoder.encode(["bytes", "bytes", "uint256", "address"], [
         toBeArray(data),
-        "0x1234",
+        input,
         jobId,
         rewardsAddress]);
     console.log("encodedData: ", encodedData);

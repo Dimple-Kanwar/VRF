@@ -1,10 +1,7 @@
 import schedule from 'node-schedule';
-import {jobId} from "../app/config.json";
 import { generateRandomness } from '.';
-import { readFileSync } from 'fs';
+import { frequency,jobId} from "/app/config.json";
 
-const config = JSON.parse(readFileSync("./app/config.json", {encoding: "utf8"}));
-const frequency = config.frequency;
 
 schedule.scheduleJob(frequency, async() => {
     // run the job here
