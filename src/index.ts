@@ -4,7 +4,7 @@ import { readFileSync } from 'fs';
 import { abi } from "./jobManager.json";
 import "dotenv/config";
 import {berachain} from "./constants.json";
-import { gasKey,rewardsAddress} from "../app/config.json"
+import { gasKey,rewardsAddress, userKey} from "../app/config.json";
 const abiCoder = ethers.AbiCoder.defaultAbiCoder();
 
 // Get provider details
@@ -21,11 +21,11 @@ const getAttestation = async (data:string, jobId:any) => {
     // read attestation private key from a file
     const attestation_private_key = readFileSync("/app/secp.sec", { encoding: "hex" });
     // const attestation_private_key = "0x9fda92bd4fb11108438a426ec845debfd9f4e88c6aa3fcad69ca3f4560ba2a22";
-    const input = 8943840;
+    // const input = 8943840;
     // encode data, input and jobId to get it signed with the attestation private key
     const encodedData = abiCoder.encode(["bytes", "bytes", "uint256", "address"], [
         toBeArray(data),
-        toBeArray(input),
+        "0x1234",
         jobId,
         rewardsAddress]);
     console.log("encodedData: ", encodedData);
@@ -48,8 +48,10 @@ export const generateRandomness = async (jobId: any) => {
     const tmp = toBeArray(randomNum.toString());
     const hashedRandomNum = ethers.solidityPackedKeccak256(['bytes'], [tmp])
     console.log("hashedRandomNum: ", hashedRandomNum);
-    const hashedRandomNum1 = ethers.solidityPackedKeccak256(['bytes'], [toBeArray(hashedRandomNum)])
-    const signature = await signer.signMessage(toBeArray(hashedRandomNum1))
+    const hashedRandomNum1 = ethers.solidityPackedKeccak256(['bytes'], [toBeArray(hashedRandomNum)]);
+    // user signs the vrf
+    const userWallet = new Wallet(userKey);
+    const signature = await userWallet.signMessage(toBeArray(hashedRandomNum1))
     console.log("signature: ", signature);
     const data = abiCoder.encode(["bytes", "bytes", "address"], [hashedRandomNum, signature, signer.address]);
     console.log("data: ", data);
@@ -66,13 +68,3 @@ const executeJob = async (jobId: any, data: any, signer: ethers.ContractRunner) 
     const tx = await jobManagerContract.executeJob(jobId, data, rewardsAddress, attestation);
     return tx;
 }
-
-//steps
-
-// enclave start
-
-// server start that accepts jobId & hardcoded path to attestation private key 
-// store jobId in a file in any format
-// get job details from job manager
-// schedule
-// executeJob

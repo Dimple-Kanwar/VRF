@@ -2,6 +2,7 @@
 /dist
 /node_modules
 /build
+/app
 
 # Logs
 logs
@@ -59,4 +60,6 @@ typechain-types
 cache
 artifacts
 
-.vscode
+esbuild
+
+

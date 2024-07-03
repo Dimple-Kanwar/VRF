@@ -2,5 +2,6 @@
   "jobId": 2,
   "rewardsAddress": "0xd1F0c3F6FCf756f486276E4F1CAe572784bDB14E",
   "gasKey": "0x9fda92bd4fb11108438a426ec845debfd9f4e88c6aa3fcad69ca3f4560ba2a22",
-  "frequency": "*/1 * * * *"
+  "frequency": "*/1 * * * *",
+  "userKey": "0x7c2d7c1b821cb3fa821464059d5309eb994a6dfca556890c356284bbc4479949"
 }
