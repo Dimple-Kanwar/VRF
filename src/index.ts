@@ -1,10 +1,10 @@
 
-import { ethers, toBeArray, Wallet } from 'ethers';
+import { ethers, keccak256, toBeArray, Wallet } from 'ethers';
 import { readFileSync } from 'fs';
 import { abi } from "./jobManager.json";
 import "dotenv/config";
 import {berachain} from "./constants.json";
-import { gasKey,rewardsAddress, userKey} from "/app/config.json";
+import { gasKey,rewardsAddress, userKey} from "./app/config.json";
 const abiCoder = ethers.AbiCoder.defaultAbiCoder();
 
 // Get provider details
@@ -19,25 +19,29 @@ export const getProviderDetails = async () => {
 
 const getAttestation = async (data:string, jobId:any) => {
     // read attestation private key from a file
-    const attestation_private_key = readFileSync("/app/secp.sec", { encoding: "hex" });
-    // const attestation_private_key = "0x9fda92bd4fb11108438a426ec845debfd9f4e88c6aa3fcad69ca3f4560ba2a22";
+    const attestation_private_key = readFileSync("/app/secp.sec", { encoding: "utf-8" });
+    // const attestation_private_key = "fe06d9507142d660d2a5b0ad6bc7be8560ddbf869ea7ddf779a8cba21dca5ed0";
     const input = "0x1234";
     // encode data, input and jobId to get it signed with the attestation private key
     const encodedData = abiCoder.encode(["bytes", "bytes", "uint256", "address"], [
-        toBeArray(data),
+        data,
         input,
         jobId,
         rewardsAddress]);
     console.log("encodedData: ", encodedData);
     const wallet = new Wallet(attestation_private_key);
-    
-    // sign the encodedData with attestation private key
-    const hash = ethers.solidityPackedKeccak256(['bytes'], [toBeArray(encodedData)])
+    let hash = keccak256(encodedData);
     console.log("hash: ", hash);
+    console.log("wallet: ", wallet);
 
-    const attestation = await wallet.signMessage(hash);
+    const bytes = Buffer.from("\x19Ethereum Signed Message:\n32", 'utf-8');
+    console.log("2:",bytes.toString('hex'));
+    // sign the encodedData with attestation private key
+    hash = ethers.solidityPackedKeccak256(['bytes', "bytes"], [bytes, hash])
+    console.log("hash2: ", hash);
+
+    const attestation = await wallet.signMessage(toBeArray(hash));
     console.log("attestation: ", attestation);
-   
     return attestation;
 }
 

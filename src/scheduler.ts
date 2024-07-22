@@ -1,7 +1,10 @@
 import schedule from 'node-schedule';
 import { generateRandomness } from '.';
-import { frequency,jobId} from "/app/config.json";
+import { readFileSync } from 'fs';
 
+const config = JSON.parse(readFileSync("./app/config.json", {encoding: "utf8"}));
+const frequency = config.frequency;
+const jobId = config.jobId;
 
 schedule.scheduleJob(frequency, async() => {
     // run the job here
@@ -13,4 +16,3 @@ process.on('SIGINT', function () {
     schedule.gracefulShutdown()
     .then(() => process.exit(0))
 });
- 

@@ -47,6 +47,7 @@ Install esbuild:
 How to build a single bundled file:
 
     ./esbuild src/scheduler.ts --bundle --outdir=dist --platform=node
+    ./esbuild src/server.ts --bundle --outdir=dist --platform=node
 
 Run binary file:
 
