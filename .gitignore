@@ -60,6 +60,5 @@ typechain-types
 cache
 artifacts
 
-esbuild
-
-
+src/app/config.json
+src/app/secp.sec
