@@ -1,7 +1,6 @@
 import schedule from 'node-schedule';
 import { generateRandomness } from '.';
 import { readFileSync } from 'fs';
-
 const config = JSON.parse(readFileSync("./app/config.json", {encoding: "utf8"}));
 const frequency = config.frequency;
 const jobId = config.jobId;

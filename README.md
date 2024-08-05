@@ -52,3 +52,7 @@ How to build a single bundled file:
 Run binary file:
 
     sudo ts-node ./dist/scheduler.js "*/1 * * * *"                    
+
+To test locally:
+    
+    npx hardhat test

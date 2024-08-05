@@ -1,9 +1,8 @@
 import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox-viem";
+import "@nomicfoundation/hardhat-toolbox";
 import "dotenv/config";
 
 const config: HardhatUserConfig = {
-  defaultNetwork: "bscTestnet",
   networks: {
     // for local dev environment
     localhost: {
@@ -17,10 +16,10 @@ const config: HardhatUserConfig = {
     //   url: "https://sepolia-rollup.arbitrum.io/rpc",
     //   accounts: [ `${process.env.ARBITRUM_PRIVATE_KEY}`]
     // },
-    bscTestnet: {
-      url: `${process.env.BSC_TESTNET_RPC_URL || ''}`,
-      accounts: [`${process.env.PRIVATE_KEY}`]
-    },
+    // bscTestnet: {
+    //   url: `${process.env.BSC_TESTNET_RPC_URL || ''}`,
+    //   accounts: [`${process.env.PRIVATE_KEY}`]
+    // },
     berachainTestnet: {
       chainId: parseInt(`${process.env.CHAIN_ID}`),
       url: `${process.env.BERACHAIN_RPC_URL || ''}`,
@@ -32,21 +31,6 @@ const config: HardhatUserConfig = {
       
     }
   },
-  // etherscan: {
-  //   apiKey: {
-  //     berachainArtio: `${process.env.BLOCK_EXPLORER_API_KEY}`, // apiKey is not required, just set a placeholder
-  //   },
-  //   customChains: [
-  //     {
-  //       network: "Berachain Testnet",
-  //       // chainId: parseInt(`${process.env.CHAIN_ID}`),
-  //       urls: {
-  //         apiURL: `${process.env.BLOCK_EXPLORER_API_URL}`,
-  //         browserURL: `${process.env.BLOCK_EXPLORER_URL}`
-  //       }
-  //     },
-  //   ]
-  // },
   solidity: {
     version: "0.8.24",
     settings: {
@@ -57,10 +41,10 @@ const config: HardhatUserConfig = {
     }
   },
   paths: {
-    sources: "./src/contracts",
-    tests: "./src/test",
-    cache: "./src/cache",
-    artifacts: "./src/artifacts",
+    sources: "./contracts",
+    tests: "./test",
+    cache: "./cache",
+    artifacts: "./artifacts",
   },
   mocha: {
     timeout: 40000
