@@ -60,5 +60,4 @@ typechain-types
 cache
 artifacts
 
-# src/app/config.json
-src/app/secp.sec
+ src/app/config.json
