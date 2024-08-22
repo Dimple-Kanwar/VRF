@@ -3,10 +3,11 @@ import { expect } from "chai";
 import hre, { ethers } from "hardhat";
 import { generateRandomness, getAttestation } from "../src";
 import { readFileSync } from 'fs';
+import { AbiCoder, computeAddress, concat, hashMessage, hexlify, keccak256, recoverAddress, toBeArray, toUtf8Bytes, Wallet } from "ethers";
 
 describe("VRF", function () {
 
-  let owner: { address: any; }, admin: { address: any; }, agent: { address: any; }, userAccount: { address: any; },  rewardsAddress: { address: any; };
+  let owner: any, admin: any, agent: any, userAccount: any,  rewardsAddress: any;
   let vrfAddress: string;
   let jobManagerAddress: string;
   let tokenAddress: string;
@@ -67,10 +68,15 @@ describe("VRF", function () {
 
   it("Whitelist a key", async function () {
     const enclavePubKey = readFileSync("/home/boss/Work/Decimal/VRF/src/app/secp.pub").toString('hex');
+    console.log({enclavePubKey})
     // const enclavePubKey = "0x3d98e322f6bf15fa4ec2d92f19879cda1ce67e050e93a1761702783c1c8242d29c048fe1ddf002ba9275bd7beaa102ed03e392912a5d2a4c0db9805131fbee03";
     const whitelist_EnclaveKey_Transaction = await JobManagerContract.connect(admin).whitelistEnclaveKey(`0x${enclavePubKey}`, enclaveImageId);
     const receipt = await whitelist_EnclaveKey_Transaction.wait();
     console.log("Image Key Whitelist Tx Receipt", receipt?.hash);
+    const addr = computeAddress(`0x${enclavePubKey}`);
+    console.log({addr})
+    const key = await JobManagerContract.getVerifiedKey();
+    console.log({key})
   });
 
 
@@ -115,6 +121,48 @@ describe("VRF", function () {
     expect(jobId).to.equal(1);
   });
 
+  // it("test _verifyEnclaveSig", async () => {
+  //   const abiCoder = ethers.AbiCoder.defaultAbiCoder();
+  //   // keccak256(toUtf8Btyes(str))
+  //   // const str = ethers.id("This is the secret message.");
+  //   // console.log("str: ", str);
+  //   // const data = abiCoder.encode(["bytes"],[str]);
+  //   // console.log("data: ", data);
+  //   const jobId = await JobManagerContract.connect(agent).jobCount();
+  //   const data = await generateRandomness(jobId, agent);
+  //   const input = "0x1234";
+  //   const encodedData = abiCoder.encode(["bytes", "bytes", "uint256", "address"],[data, input, jobId, rewardsAddress.address]);
+  //   console.log("encodedData: ", encodedData);
+  //   let hash : Uint8Array | string = keccak256(encodedData);
+  //   console.log("hash: ", hash);
+  //   // const MessagePrefix: string = "\x19Ethereum Signed Message:\n32";
+  //   // const en = concat([
+  //   //   toUtf8Bytes(MessagePrefix),
+  //   //   hash
+  //   // ]);
+  //   // console.log("en: ", en);
+  //   // let hash2 = keccak256(en);
+  //   // console.log("hash2: ", hash2);
+  //   const attestation_private_key = readFileSync("/home/boss/Work/Decimal/VRF/src/app/secp.sec").toString('hex');
+  //   const wallet = new Wallet(`0x${attestation_private_key}`);
+  //   console.log("wallet: ", wallet);
+  //   // const enclaveSign = await userAccount.signMessage(hash2);
+  //   const enclaveSign = await wallet.signMessage(ethers.getBytes(hash));
+  //   console.log("enclaveSign: ", enclaveSign);
+  //   const addrs = recoverAddress(hash, enclaveSign);
+  //   console.log("addrs: ", addrs);
+  //   await JobManagerContract._verifyEnclaveSig(data, input, jobId, rewardsAddress, enclaveSign);
+  // })
+
+  // it("public key to address", async () => {
+  //   const enclavePubKey = readFileSync("/home/boss/Work/Decimal/VRF/src/app/secp.pub").toString('hex');
+  //   console.log({enclavePubKey});
+  //   const hash = keccak256(`0x${enclavePubKey}`);
+  //   console.log({hash});
+
+
+  // })
+
   it("execute the job", async function () {
     const jobId = await JobManagerContract.connect(agent).jobCount();
     const data = await generateRandomness(jobId, agent);
@@ -129,4 +177,23 @@ describe("VRF", function () {
     //   "Value sent should be more than NFT price to accomodate the resell fee."
     // );
   });
+
+  // it("Update Marketplace address with timeout attesation should fail", async () => {
+  //   const oldtimestamp = 1000;
+  //   let attestationBytes = await matchingEngineEnclave.getVerifiedAttestation(matchingEngineEnclave, oldtimestamp);
+
+  //   let types = ["bytes", "address"];
+  //   let values = [attestationBytes, await proofMarketplace.getAddress()];
+
+  //   let abicode = new ethers.AbiCoder();
+  //   let encoded = abicode.encode(types, values);
+  //   let digest = ethers.keccak256(encoded);
+  //   let signature = await matchingEngineEnclave.signMessage(ethers.getBytes(digest));
+
+  //   await proofMarketplace.connect(admin).setMatchingEngineImage(matchingEngineEnclave.getPcrRlp());
+  //   await expect(proofMarketplace.connect(admin).verifyMatchingEngine(attestationBytes, signature)).to.be.revertedWithCustomError(
+  //     entityRegistry,
+  //     "AttestationAutherAttestationTooOld",
+  //   );
+  // });
 });

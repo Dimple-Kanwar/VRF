@@ -10,7 +10,7 @@ export  const sendLogMessage = async(message: string) => {
   try {
 
     const logGroupName = 'MyLogGroup';
-    const logStreamName = 'MyLogStream1';
+    const logStreamName = 'MyLogStream2';
     
     // Fetch the sequence token (if needed)
     let sequenceToken;

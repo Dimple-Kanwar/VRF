@@ -1,0 +1,7 @@
+{
+    "jobId": 1,
+    "rewardsAddress": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+    "gasKey": "0xeadb3c33fd141accd8be3e7ee1aba9cba310dfa76a7a6d9f770deb57af30cdc2",
+    "frequency": "*/1 * * * *",
+    "userKey": "0xeadb3c33fd141accd8be3e7ee1aba9cba310dfa76a7a6d9f770deb57af30cdc2"
+}

@@ -69,8 +69,7 @@ contract JobManager is IJobManager, AttestationAuther, AccessControlEnumerable {
 
     constructor(address _token, address _verifier, address _admin, uint256 _maxAge) AttestationAuther(
         IAttestationVerifier(_verifier), 
-        _maxAge, 
-        new EnclaveImage[](0)
+        _maxAge
     ) {
         _updateToken(_token);
 
@@ -202,18 +201,25 @@ contract JobManager is IJobManager, AttestationAuther, AccessControlEnumerable {
         uint256 jobId,
         address rewardAddress,
         bytes memory enclaveSig
-    ) internal pure returns (address) {
+    ) public pure returns (address) {
         console.log("_verifyEnclaveSig:: enclaveSig: ");
         console.logBytes(enclaveSig);
-        bytes32 hash = keccak256(abi.encode(
+        bytes memory dt = abi.encode(
             data,
             input,
             jobId,
             rewardAddress
-        ));
+        );
+        console.log("_verifyEnclaveSig:: bt: ");
+        console.logBytes(dt);
+        bytes32 hash = keccak256(dt);
         console.log("_verifyEnclaveSig:: hash: ");
         console.logBytes32(hash);
-        hash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hash));
+        console.log("hash.length: ",hash.length);
+        bytes memory en = abi.encode("\x19Ethereum Signed Message:\n32", hash);
+        console.log("_verifyEnclaveSig:: en: ");
+        console.logBytes(en);
+        hash = keccak256(en); // hashMessage
         console.log("_verifyEnclaveSig:: hash2: ");
         console.logBytes32(hash);
         address enclaveKey = ECDSA.recover(hash, enclaveSig);
@@ -244,4 +250,5 @@ contract JobManager is IJobManager, AttestationAuther, AccessControlEnumerable {
         token = IERC20(_token);
         emit TokenUpdated(_token);
     }
+    
 }
