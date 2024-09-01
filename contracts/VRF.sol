@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.17;
-
+import "hardhat/console.sol";
 contract VRF {
     address private owner;
 
@@ -55,7 +55,12 @@ contract VRF {
         (bytes memory _randomWords, bytes memory _signature, address signer) =
             abi.decode(_data, (bytes, bytes, address));
         bytes32 messageHash = getMessageHash(_randomWords);
+        console.log("messageHash: ");
+        console.logBytes32(messageHash);
+
         bytes32 ethSignedMessageHash = getEthSignedMessageHash(messageHash);
+        console.log("ethSignedMessageHash: ");
+        console.logBytes32(ethSignedMessageHash);
         require(recoverSigner(ethSignedMessageHash, _signature) == signer, "Signer mismatch");
         s_requests[_requestId] = RequestStatus({
             randomWords: _randomWords,
@@ -109,7 +114,6 @@ contract VRF {
     function verify(
         uint256 _requestId,
         bytes memory _randomWords,
-        // bytes memory _signature,
         address _signer
     ) public view returns (bool) {
         require(s_requests[_requestId].exists, "request not found");

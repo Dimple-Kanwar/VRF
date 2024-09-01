@@ -3,6 +3,7 @@
 pragma solidity ^0.8.0;
 
 import "./interfaces/IAttestationVerifier.sol";
+import "hardhat/console.sol";
 
 /// @notice Contract that allows children to check if a given address belongs to a verified enclave.
 /// @dev The Oyster platform works on the basis of attestations to ensure security. These attestations contain a
@@ -12,11 +13,11 @@ import "./interfaces/IAttestationVerifier.sol";
 /// (assuming good enclave code that does not leak the key inside it). Here, the attestation only needs to be
 /// verified once, and the public key can be reused for multiple verifications later.
 ///
-/// A common approach would be to use the verifyEnclaveKey function to verify the enclave key once, and use
-/// the _allowOnlyVerified function to verify that a given signer belongs to a previously verified enclave.
+/// A common approach would be to use the `verifyEnclaveKey` function to verify the enclave key once, and use
+/// the `_allowOnlyVerified` function to verify that a given signer belongs to a previously verified enclave.
 ///
 /// In addition, the Auther features the concept of image families. It allows images (i.e. PCRs) to get tagged
-/// with a family id and is paired with a family-aware _allowOnlyVerifiedFamily function to verify that a
+/// with a family id and is paired with a family-aware `_allowOnlyVerifiedFamily` function to verify that a
 /// given signer belongs to a previously verified enclave of a specific family.
 contract AttestationAuther {
     /// @notice Attestation verifier contract that performs the verification.
@@ -49,19 +50,19 @@ contract AttestationAuther {
     /// @notice Expected the arrays to have equal lengths.
     error AttestationAutherMismatchedLengths();
 
-    /// @notice Emitted when enclave image imageId with PCRs (PCR0,PCR1,PCR2) is whitelisted.
+    /// @notice Emitted when enclave image `imageId` with PCRs `(PCR0,PCR1,PCR2)` is whitelisted.
     event EnclaveImageWhitelisted(bytes32 indexed imageId, bytes PCR0, bytes PCR1, bytes PCR2);
-    /// @notice Emitted when enclave image imageId is revoked.
+    /// @notice Emitted when enclave image `imageId` is revoked.
     event EnclaveImageRevoked(bytes32 indexed imageId);
-    /// @notice Emitted when enclave image imageId is added to family.
+    /// @notice Emitted when enclave image `imageId` is added to `family`.
     event EnclaveImageAddedToFamily(bytes32 indexed imageId, bytes32 family);
-    /// @notice Emitted when enclave image imageId is removed from family.
+    /// @notice Emitted when enclave image `imageId` is removed from `family`.
     event EnclaveImageRemovedFromFamily(bytes32 indexed imageId, bytes32 family);
-    /// @notice Emitted when enclave key enclaveAddress is whitelisted against enclave image imageId.
+    /// @notice Emitted when enclave key `enclaveAddress` is whitelisted against enclave image `imageId`.
     event EnclaveKeyWhitelisted(address indexed enclaveAddress, bytes32 indexed imageId, bytes enclavePubKey);
-    /// @notice Emitted when enclave key enclaveAddress is revoked.
+    /// @notice Emitted when enclave key `enclaveAddress` is revoked.
     event EnclaveKeyRevoked(address indexed enclaveAddress);
-    /// @notice Emitted when enclave key enclaveAddress is verified against enclave image imageId.
+    /// @notice Emitted when enclave key `enclaveAddress` is verified against enclave image `imageId`.
     event EnclaveKeyVerified(address indexed enclaveAddress, bytes32 indexed imageId, bytes enclavePubKey);
 
     // constructors cannot be overloaded, avoid taking images or families entirely
@@ -96,7 +97,7 @@ contract AttestationAuther {
 
     /// @notice Computes the address corresponding to a given public key.
     /// @param pubKey Public key for which the address needs to be computed.
-    /// @return Address corresponding to pubKey.
+    /// @return Address corresponding to `pubKey`.
     function _pubKeyToAddress(bytes memory pubKey) internal pure returns (address) {
         if (!(pubKey.length == 64)) revert AttestationAutherPubkeyLengthInvalid();
 
@@ -105,7 +106,7 @@ contract AttestationAuther {
     }
 
     /// @notice Whitelist an enclave image without verifying any attestations.
-    /// May emit a EnclaveImageWhitelisted event.
+    /// May emit a `EnclaveImageWhitelisted` event.
     /// @param image Image to be whitelisted.
     /// @return Computed image id and true if the image was freshly whitelisted, false otherwise.
     function _whitelistEnclaveImage(EnclaveImage memory image) internal virtual returns (bytes32, bool) {
@@ -122,7 +123,7 @@ contract AttestationAuther {
     }
 
     /// @notice Revoke an enclave image.
-    /// May emit a EnclaveImageRevoked event.
+    /// May emit a `EnclaveImageRevoked` event.
     /// @param imageId Image to be revoked.
     /// @return true if the image was freshly revoked, false otherwise.
     function _revokeEnclaveImage(bytes32 imageId) internal virtual returns (bool) {
@@ -135,7 +136,7 @@ contract AttestationAuther {
     }
 
     /// @notice Add an enclave image to a given family.
-    /// May emit a EnclaveImageAddedToFamily event.
+    /// May emit a `EnclaveImageAddedToFamily` event.
     /// @param imageId Image to be added to family.
     /// @param family Family to add the image to.
     /// @return true if the image was freshly added to the family, false otherwise.
@@ -149,7 +150,7 @@ contract AttestationAuther {
     }
 
     /// @notice Remove an enclave image from a given family.
-    /// May emit a EnclaveImageRemovedFromFamily event.
+    /// May emit a `EnclaveImageRemovedFromFamily` event.
     /// @param imageId Image to be removed from family.
     /// @param family Family to remove the image from.
     /// @return true if the image was freshly removed from the family, false otherwise.
@@ -163,7 +164,7 @@ contract AttestationAuther {
     }
 
     /// @notice Whitelist an enclave key against a given enclave image without verifying any attestations.
-    /// May emit a EnclaveKeyWhitelisted event.
+    /// May emit a `EnclaveKeyWhitelisted` event.
     /// @param enclavePubKey Enclave key to be whitelisted.
     /// @param imageId Image to be whitelisted against.
     /// @return true if the key was freshly whitelisted against the image, false otherwise.
@@ -171,7 +172,7 @@ contract AttestationAuther {
         if (!(whitelistedImages[imageId].PCR0.length != 0)) revert AttestationAutherImageNotWhitelisted();
 
         address enclaveAddress = _pubKeyToAddress(enclavePubKey);
-        
+        console.log("_whitelistEnclaveKey:: enclaveAddress: ",enclaveAddress);
         if (!(verifiedKeys[enclaveAddress] == bytes32(0))) return false;
 
         verifiedKeys[enclaveAddress] = imageId;
@@ -181,7 +182,7 @@ contract AttestationAuther {
     }
 
     /// @notice Revoke an enclave key.
-    /// May emit a EnclaveKeyRevoked event.
+    /// May emit a `EnclaveKeyRevoked` event.
     /// @param enclaveAddress Enclave whose key is to be revoked.
     /// @return true if the key was freshly revoked, false otherwise.
     function _revokeEnclaveKey(address enclaveAddress) internal virtual returns (bool) {
@@ -194,7 +195,7 @@ contract AttestationAuther {
     }
 
     /// @notice Verify an enclave key using an attestation.
-    /// May emit a EnclaveKeyVerified event.
+    /// May emit a `EnclaveKeyVerified` event.
     /// @param signature Signature from a valid attestation verifier enclave.
     /// @param attestation Attestation from the enclave to be verified.
     /// @return true if the key was freshly verified, false otherwise.
@@ -219,7 +220,7 @@ contract AttestationAuther {
     }
 
     /// @notice Verify an enclave key using an attestation.
-    /// May emit a EnclaveKeyVerified event.
+    /// May emit a `EnclaveKeyVerified` event.
     /// @param signature Signature from a valid attestation verifier enclave.
     /// @param attestation Attestation from the enclave to be verified.
     /// @return true if the key was freshly verified, false otherwise.
@@ -265,7 +266,7 @@ contract AttestationAuther {
     /// @notice Check is a given image is part of a given family.
     /// @param imageId Image being checked.
     /// @param family Expected family of the image.
-    /// @return true if imageId is part of family, false otherwise.
+    /// @return true if `imageId` is part of `family`, false otherwise.
     function isImageInFamily(bytes32 imageId, bytes32 family) external view returns (bool) {
         return imageFamilies[family][imageId];
     }

@@ -6,10 +6,12 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 
 import "./AttestationAuther.sol";
-import "hardhat/console.sol";
+
 import "./interfaces/IAttestationVerifier.sol";
 import "./interfaces/IValidator.sol";
 import "./interfaces/IJobManager.sol";
+
+import "hardhat/console.sol";
 
 contract JobManager is IJobManager, AttestationAuther, AccessControlEnumerable {
     struct Validation {
@@ -149,9 +151,8 @@ contract JobManager is IJobManager, AttestationAuther, AccessControlEnumerable {
             rewardAddress,
             attestation
         );
-        console.log("executeJob:: enclaveKey: ", enclaveKey);
         isEnclaveKeyValid(enclaveKey);
-        
+       
         // check if job validations are met
         for(uint256 i = 0; i < job.validations.length; i++) {
             (bool success, bytes memory result) = job.validations[i].validationAddress.call(abi.encodeWithSelector(
@@ -160,37 +161,27 @@ contract JobManager is IJobManager, AttestationAuther, AccessControlEnumerable {
                 i,
                 data
             ));
-            require(success, "Validation call reverted");
-            console.log("executeJob:: result: ");
+            console.log("result: ");
             console.logBytes(result);
-            console.log("executeJob:: abi.decode(result, (bool)): ");
-            console.logBool(abi.decode(result, (bool)));
+            console.log("success: ", success);
+            require(success, "Validation call reverted");
             require(abi.decode(result, (bool)), "Validation check failed");
         }
         // execute job
         uint256 _payment = job.paymentPerSecond*(block.timestamp - job.lastExecutionTime);
-        console.log("executeJob:: _payment: ", _payment);
         uint256 _balance = token.balanceOf(address(this));
-        console.log("executeJob:: _balance: ", _balance);
-        console.log("executeJob:: job.amount: ", job.amount);
         if(job.amount > _payment) {
             job.amount -= _payment;
-            console.log("executeJob:: if job.amount: ", job.amount);
         } else {
-            console.log("executeJob:: job.amount > _payment false");
             delete job.amount;
         }
         job.lastExecutionTime = block.timestamp;
-        console.log("executeJob:: job.lastExecutionTime: ", job.lastExecutionTime);
         emit JobExecuted(jobCount, msg.sender, rewardAddress, job.paymentPerSecond, data);
-        console.log("executeJob:: JobExecuted emitted!! ");
-        console.log("executeJob:: _balance: ", _balance);
+
         if(_balance == 0) return;
         if(_balance > _payment) {
-            console.log("executeJob:: _balance > _payment true: ");
             token.transfer(rewardAddress, _payment);
         } else {
-            console.log("executeJob:: _balance > _payment false: ");
             token.transfer(rewardAddress, _balance);
         }
     }
@@ -201,29 +192,15 @@ contract JobManager is IJobManager, AttestationAuther, AccessControlEnumerable {
         uint256 jobId,
         address rewardAddress,
         bytes memory enclaveSig
-    ) public pure returns (address) {
-        console.log("_verifyEnclaveSig:: enclaveSig: ");
-        console.logBytes(enclaveSig);
-        bytes memory dt = abi.encode(
+    ) internal pure returns (address) {
+        bytes32 hash = keccak256(abi.encode(
             data,
             input,
             jobId,
             rewardAddress
-        );
-        console.log("_verifyEnclaveSig:: bt: ");
-        console.logBytes(dt);
-        bytes32 hash = keccak256(dt);
-        console.log("_verifyEnclaveSig:: hash: ");
-        console.logBytes32(hash);
-        console.log("hash.length: ",hash.length);
-        bytes memory en = abi.encode("\x19Ethereum Signed Message:\n32", hash);
-        console.log("_verifyEnclaveSig:: en: ");
-        console.logBytes(en);
-        hash = keccak256(en); // hashMessage
-        console.log("_verifyEnclaveSig:: hash2: ");
-        console.logBytes32(hash);
+        ));
+        hash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hash));
         address enclaveKey = ECDSA.recover(hash, enclaveSig);
-        console.log("_verifyEnclaveSig:: enclaveKey: ", enclaveKey);
         require(enclaveKey != address(0), "Invalid enclave signature");
         return enclaveKey;
     }
@@ -237,7 +214,6 @@ contract JobManager is IJobManager, AttestationAuther, AccessControlEnumerable {
     }
 
     function whitelistEnclaveImage(EnclaveImage memory image) external onlyAdmin {
-        console.log("image: ");
         _whitelistEnclaveImage(image);
     }
 
@@ -250,5 +226,4 @@ contract JobManager is IJobManager, AttestationAuther, AccessControlEnumerable {
         token = IERC20(_token);
         emit TokenUpdated(_token);
     }
-    
 }

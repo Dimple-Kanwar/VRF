@@ -1,17 +1,23 @@
 import schedule from 'node-schedule';
-import { generateRandomness } from '.';
+import { executeJob, generateRandomness, getProviderDetails } from '.';
 import { readFileSync } from 'fs';
-const config = JSON.parse(readFileSync("./app/config.json", {encoding: "utf8"}));
+import { berachain } from "./constants.json";
+import { Wallet } from 'ethers';
+const config = JSON.parse(readFileSync("./app/config.json", { encoding: "utf8" }));
 const frequency = config.frequency;
 const jobId = config.jobId;
 
-schedule.scheduleJob(frequency, async() => {
-    // run the job here
-    await generateRandomness(jobId);
+schedule.scheduleJob(frequency, async () => {
+  // run the job here
+  const { signer } = await getProviderDetails();
+  const userWallet = new Wallet(config.userKey);
+  const { data } = await generateRandomness(userWallet);
+  const execute_tx = await executeJob(jobId, data, signer, berachain.jobManagerContractAddress);
+  console.log("execute_tx: ", execute_tx?.hash)
 });
 
 //graceful job shut down when a system interrupt occurs
-process.on('SIGINT', function () { 
-    schedule.gracefulShutdown()
+process.on('SIGINT', function () {
+  schedule.gracefulShutdown()
     .then(() => process.exit(0))
 });

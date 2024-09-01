@@ -1,940 +1,1062 @@
 {
   "abi": [
     {
-      "type": "constructor",
       "inputs": [
         {
+          "internalType": "address",
           "name": "_token",
-          "type": "address",
-          "internalType": "address"
+          "type": "address"
         },
         {
+          "internalType": "address",
           "name": "_verifier",
-          "type": "address",
-          "internalType": "address"
+          "type": "address"
         },
         {
+          "internalType": "address",
           "name": "_admin",
-          "type": "address",
-          "internalType": "address"
+          "type": "address"
         },
         {
+          "internalType": "uint256",
           "name": "_maxAge",
-          "type": "uint256",
-          "internalType": "uint256"
+          "type": "uint256"
         }
       ],
-      "stateMutability": "nonpayable"
+      "stateMutability": "nonpayable",
+      "type": "constructor"
     },
     {
-      "type": "function",
-      "name": "ATTESTATION_MAX_AGE",
       "inputs": [],
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256",
-          "internalType": "uint256"
-        }
-      ],
-      "stateMutability": "view"
+      "name": "AttestationAutherAttestationTooOld",
+      "type": "error"
     },
     {
-      "type": "function",
-      "name": "ATTESTATION_VERIFIER",
       "inputs": [],
-      "outputs": [
-        {
-          "name": "",
-          "type": "address",
-          "internalType": "contract IAttestationVerifier"
-        }
-      ],
-      "stateMutability": "view"
+      "name": "AttestationAutherImageNotInFamily",
+      "type": "error"
     },
     {
-      "type": "function",
-      "name": "DEFAULT_ADMIN_ROLE",
       "inputs": [],
-      "outputs": [
-        {
-          "name": "",
-          "type": "bytes32",
-          "internalType": "bytes32"
-        }
-      ],
-      "stateMutability": "view"
+      "name": "AttestationAutherImageNotWhitelisted",
+      "type": "error"
     },
     {
-      "type": "function",
-      "name": "createJob",
-      "inputs": [
-        {
-          "name": "_validations",
-          "type": "tuple[]",
-          "internalType": "struct IJobManager.ValidationSetup[]",
-          "components": [
-            {
-              "name": "validationAddress",
-              "type": "address",
-              "internalType": "address"
-            },
-            {
-              "name": "validationFunction",
-              "type": "bytes4",
-              "internalType": "bytes4"
-            },
-            {
-              "name": "initializerFunction",
-              "type": "bytes4",
-              "internalType": "bytes4"
-            },
-            {
-              "name": "initializerData",
-              "type": "bytes",
-              "internalType": "bytes"
-            }
-          ]
-        },
-        {
-          "name": "_enclave_url",
-          "type": "string",
-          "internalType": "string"
-        },
-        {
-          "name": "_pcrs",
-          "type": "tuple",
-          "internalType": "struct IJobManager.Image",
-          "components": [
-            {
-              "name": "PCR0",
-              "type": "bytes",
-              "internalType": "bytes"
-            },
-            {
-              "name": "PCR1",
-              "type": "bytes",
-              "internalType": "bytes"
-            },
-            {
-              "name": "PCR2",
-              "type": "bytes",
-              "internalType": "bytes"
-            }
-          ]
-        },
-        {
-          "name": "_input",
-          "type": "bytes",
-          "internalType": "bytes"
-        },
-        {
-          "name": "_paymentPerSecond",
-          "type": "uint256",
-          "internalType": "uint256"
-        },
-        {
-          "name": "_maxBaseFee",
-          "type": "uint256",
-          "internalType": "uint256"
-        },
-        {
-          "name": "_maxPriorityFee",
-          "type": "uint256",
-          "internalType": "uint256"
-        },
-        {
-          "name": "_gasRefundAmount",
-          "type": "uint256",
-          "internalType": "uint256"
-        },
-        {
-          "name": "_amount",
-          "type": "uint256",
-          "internalType": "uint256"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256",
-          "internalType": "uint256"
-        }
-      ],
-      "stateMutability": "payable"
-    },
-    {
-      "type": "function",
-      "name": "executeJob",
-      "inputs": [
-        {
-          "name": "jobId",
-          "type": "uint256",
-          "internalType": "uint256"
-        },
-        {
-          "name": "data",
-          "type": "bytes",
-          "internalType": "bytes"
-        },
-        {
-          "name": "rewardAddress",
-          "type": "address",
-          "internalType": "address"
-        },
-        {
-          "name": "attestation",
-          "type": "bytes",
-          "internalType": "bytes"
-        }
-      ],
-      "outputs": [],
-      "stateMutability": "nonpayable"
-    },
-    {
-      "type": "function",
-      "name": "getRoleAdmin",
-      "inputs": [
-        {
-          "name": "role",
-          "type": "bytes32",
-          "internalType": "bytes32"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "",
-          "type": "bytes32",
-          "internalType": "bytes32"
-        }
-      ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
-      "name": "getRoleMember",
-      "inputs": [
-        {
-          "name": "role",
-          "type": "bytes32",
-          "internalType": "bytes32"
-        },
-        {
-          "name": "index",
-          "type": "uint256",
-          "internalType": "uint256"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "",
-          "type": "address",
-          "internalType": "address"
-        }
-      ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
-      "name": "getRoleMemberCount",
-      "inputs": [
-        {
-          "name": "role",
-          "type": "bytes32",
-          "internalType": "bytes32"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256",
-          "internalType": "uint256"
-        }
-      ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
-      "name": "getVerifiedKey",
-      "inputs": [
-        {
-          "name": "_key",
-          "type": "address",
-          "internalType": "address"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "",
-          "type": "bytes32",
-          "internalType": "bytes32"
-        }
-      ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
-      "name": "getWhitelistedImage",
-      "inputs": [
-        {
-          "name": "_imageId",
-          "type": "bytes32",
-          "internalType": "bytes32"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "",
-          "type": "tuple",
-          "internalType": "struct AttestationAuther.EnclaveImage",
-          "components": [
-            {
-              "name": "PCR0",
-              "type": "bytes",
-              "internalType": "bytes"
-            },
-            {
-              "name": "PCR1",
-              "type": "bytes",
-              "internalType": "bytes"
-            },
-            {
-              "name": "PCR2",
-              "type": "bytes",
-              "internalType": "bytes"
-            }
-          ]
-        }
-      ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
-      "name": "grantRole",
-      "inputs": [
-        {
-          "name": "role",
-          "type": "bytes32",
-          "internalType": "bytes32"
-        },
-        {
-          "name": "account",
-          "type": "address",
-          "internalType": "address"
-        }
-      ],
-      "outputs": [],
-      "stateMutability": "nonpayable"
-    },
-    {
-      "type": "function",
-      "name": "hasRole",
-      "inputs": [
-        {
-          "name": "role",
-          "type": "bytes32",
-          "internalType": "bytes32"
-        },
-        {
-          "name": "account",
-          "type": "address",
-          "internalType": "address"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "",
-          "type": "bool",
-          "internalType": "bool"
-        }
-      ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
-      "name": "isEnclaveKeyValid",
-      "inputs": [
-        {
-          "name": "key",
-          "type": "address",
-          "internalType": "address"
-        }
-      ],
-      "outputs": [],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
-      "name": "jobCount",
       "inputs": [],
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256",
-          "internalType": "uint256"
-        }
-      ],
-      "stateMutability": "view"
+      "name": "AttestationAutherKeyNotVerified",
+      "type": "error"
     },
     {
-      "type": "function",
-      "name": "jobs",
-      "inputs": [
-        {
-          "name": "",
-          "type": "uint256",
-          "internalType": "uint256"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "creator",
-          "type": "address",
-          "internalType": "address"
-        },
-        {
-          "name": "image",
-          "type": "tuple",
-          "internalType": "struct IJobManager.Image",
-          "components": [
-            {
-              "name": "PCR0",
-              "type": "bytes",
-              "internalType": "bytes"
-            },
-            {
-              "name": "PCR1",
-              "type": "bytes",
-              "internalType": "bytes"
-            },
-            {
-              "name": "PCR2",
-              "type": "bytes",
-              "internalType": "bytes"
-            }
-          ]
-        },
-        {
-          "name": "enclave_url",
-          "type": "string",
-          "internalType": "string"
-        },
-        {
-          "name": "input",
-          "type": "bytes",
-          "internalType": "bytes"
-        },
-        {
-          "name": "paymentPerSecond",
-          "type": "uint256",
-          "internalType": "uint256"
-        },
-        {
-          "name": "lastExecutionTime",
-          "type": "uint256",
-          "internalType": "uint256"
-        },
-        {
-          "name": "maxBaseFee",
-          "type": "uint256",
-          "internalType": "uint256"
-        },
-        {
-          "name": "maxPriorityFee",
-          "type": "uint256",
-          "internalType": "uint256"
-        },
-        {
-          "name": "gasRefundAmount",
-          "type": "uint256",
-          "internalType": "uint256"
-        },
-        {
-          "name": "amount",
-          "type": "uint256",
-          "internalType": "uint256"
-        }
-      ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
-      "name": "renounceRole",
-      "inputs": [
-        {
-          "name": "role",
-          "type": "bytes32",
-          "internalType": "bytes32"
-        },
-        {
-          "name": "account",
-          "type": "address",
-          "internalType": "address"
-        }
-      ],
-      "outputs": [],
-      "stateMutability": "nonpayable"
-    },
-    {
-      "type": "function",
-      "name": "revokeRole",
-      "inputs": [
-        {
-          "name": "role",
-          "type": "bytes32",
-          "internalType": "bytes32"
-        },
-        {
-          "name": "account",
-          "type": "address",
-          "internalType": "address"
-        }
-      ],
-      "outputs": [],
-      "stateMutability": "nonpayable"
-    },
-    {
-      "type": "function",
-      "name": "supportsInterface",
-      "inputs": [
-        {
-          "name": "interfaceId",
-          "type": "bytes4",
-          "internalType": "bytes4"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "",
-          "type": "bool",
-          "internalType": "bool"
-        }
-      ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
-      "name": "token",
       "inputs": [],
-      "outputs": [
-        {
-          "name": "",
-          "type": "address",
-          "internalType": "contract IERC20"
-        }
-      ],
-      "stateMutability": "view"
+      "name": "AttestationAutherMismatchedLengths",
+      "type": "error"
     },
     {
-      "type": "function",
-      "name": "updateToken",
-      "inputs": [
-        {
-          "name": "_token",
-          "type": "address",
-          "internalType": "address"
-        }
-      ],
-      "outputs": [],
-      "stateMutability": "nonpayable"
+      "inputs": [],
+      "name": "AttestationAutherPCRsInvalid",
+      "type": "error"
     },
     {
-      "type": "function",
-      "name": "verifyKey",
+      "inputs": [],
+      "name": "AttestationAutherPubkeyLengthInvalid",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
       "inputs": [
         {
-          "name": "signature",
-          "type": "bytes",
-          "internalType": "bytes"
-        },
-        {
-          "name": "enclavePubKey",
-          "type": "bytes",
-          "internalType": "bytes"
-        },
-        {
+          "indexed": true,
+          "internalType": "bytes32",
           "name": "imageId",
-          "type": "bytes32",
-          "internalType": "bytes32"
+          "type": "bytes32"
         },
         {
-          "name": "enclaveCPUs",
-          "type": "uint256",
-          "internalType": "uint256"
-        },
-        {
-          "name": "enclaveMemory",
-          "type": "uint256",
-          "internalType": "uint256"
-        },
-        {
-          "name": "timestampInMilliseconds",
-          "type": "uint256",
-          "internalType": "uint256"
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "family",
+          "type": "bytes32"
         }
       ],
-      "outputs": [],
-      "stateMutability": "nonpayable"
+      "name": "EnclaveImageAddedToFamily",
+      "type": "event"
     },
     {
-      "type": "function",
-      "name": "whitelistEnclaveImage",
+      "anonymous": false,
       "inputs": [
         {
-          "name": "image",
-          "type": "tuple",
-          "internalType": "struct AttestationAuther.EnclaveImage",
-          "components": [
-            {
-              "name": "PCR0",
-              "type": "bytes",
-              "internalType": "bytes"
-            },
-            {
-              "name": "PCR1",
-              "type": "bytes",
-              "internalType": "bytes"
-            },
-            {
-              "name": "PCR2",
-              "type": "bytes",
-              "internalType": "bytes"
-            }
-          ]
-        }
-      ],
-      "outputs": [],
-      "stateMutability": "nonpayable"
-    },
-    {
-      "type": "function",
-      "name": "whitelistEnclaveKey",
-      "inputs": [
-        {
-          "name": "enclavePubKey",
-          "type": "bytes",
-          "internalType": "bytes"
-        },
-        {
+          "indexed": true,
+          "internalType": "bytes32",
           "name": "imageId",
-          "type": "bytes32",
-          "internalType": "bytes32"
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "family",
+          "type": "bytes32"
         }
       ],
-      "outputs": [],
-      "stateMutability": "nonpayable"
+      "name": "EnclaveImageRemovedFromFamily",
+      "type": "event"
     },
     {
-      "type": "event",
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "imageId",
+          "type": "bytes32"
+        }
+      ],
       "name": "EnclaveImageRevoked",
-      "inputs": [
-        {
-          "name": "imageId",
-          "type": "bytes32",
-          "indexed": true,
-          "internalType": "bytes32"
-        }
-      ],
-      "anonymous": false
+      "type": "event"
     },
     {
-      "type": "event",
-      "name": "EnclaveImageWhitelisted",
+      "anonymous": false,
       "inputs": [
         {
-          "name": "imageId",
-          "type": "bytes32",
           "indexed": true,
-          "internalType": "bytes32"
+          "internalType": "bytes32",
+          "name": "imageId",
+          "type": "bytes32"
         },
         {
+          "indexed": false,
+          "internalType": "bytes",
           "name": "PCR0",
-          "type": "bytes",
-          "indexed": false,
-          "internalType": "bytes"
+          "type": "bytes"
         },
         {
+          "indexed": false,
+          "internalType": "bytes",
           "name": "PCR1",
-          "type": "bytes",
-          "indexed": false,
-          "internalType": "bytes"
+          "type": "bytes"
         },
         {
+          "indexed": false,
+          "internalType": "bytes",
           "name": "PCR2",
-          "type": "bytes",
-          "indexed": false,
-          "internalType": "bytes"
+          "type": "bytes"
         }
       ],
-      "anonymous": false
+      "name": "EnclaveImageWhitelisted",
+      "type": "event"
     },
     {
-      "type": "event",
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "enclaveAddress",
+          "type": "address"
+        }
+      ],
       "name": "EnclaveKeyRevoked",
-      "inputs": [
-        {
-          "name": "enclavePubKey",
-          "type": "bytes",
-          "indexed": true,
-          "internalType": "bytes"
-        }
-      ],
-      "anonymous": false
+      "type": "event"
     },
     {
-      "type": "event",
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "enclaveAddress",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "imageId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "enclavePubKey",
+          "type": "bytes"
+        }
+      ],
       "name": "EnclaveKeyVerified",
-      "inputs": [
-        {
-          "name": "enclavePubKey",
-          "type": "bytes",
-          "indexed": true,
-          "internalType": "bytes"
-        },
-        {
-          "name": "imageId",
-          "type": "bytes32",
-          "indexed": true,
-          "internalType": "bytes32"
-        }
-      ],
-      "anonymous": false
+      "type": "event"
     },
     {
-      "type": "event",
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "enclaveAddress",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "imageId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "enclavePubKey",
+          "type": "bytes"
+        }
+      ],
       "name": "EnclaveKeyWhitelisted",
-      "inputs": [
-        {
-          "name": "enclavePubKey",
-          "type": "bytes",
-          "indexed": true,
-          "internalType": "bytes"
-        },
-        {
-          "name": "imageId",
-          "type": "bytes32",
-          "indexed": true,
-          "internalType": "bytes32"
-        }
-      ],
-      "anonymous": false
+      "type": "event"
     },
     {
-      "type": "event",
-      "name": "JobCreated",
+      "anonymous": false,
       "inputs": [
         {
+          "indexed": true,
+          "internalType": "uint256",
           "name": "jobId",
-          "type": "uint256",
-          "indexed": true,
-          "internalType": "uint256"
+          "type": "uint256"
         },
         {
+          "indexed": false,
+          "internalType": "string",
           "name": "enclaveUrl",
-          "type": "string",
-          "indexed": false,
-          "internalType": "string"
+          "type": "string"
         },
         {
+          "indexed": false,
+          "internalType": "bytes",
           "name": "input",
-          "type": "bytes",
-          "indexed": false,
-          "internalType": "bytes"
+          "type": "bytes"
         },
         {
-          "name": "creator",
-          "type": "address",
           "indexed": true,
-          "internalType": "address"
+          "internalType": "address",
+          "name": "creator",
+          "type": "address"
         },
         {
-          "name": "validations",
-          "type": "tuple[]",
+          "components": [
+            {
+              "internalType": "address",
+              "name": "validationAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes4",
+              "name": "validationFunction",
+              "type": "bytes4"
+            }
+          ],
           "indexed": false,
           "internalType": "struct JobManager.Validation[]",
+          "name": "validations",
+          "type": "tuple[]"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "paymentPerSecond",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "maxBaseFee",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "maxPriorityFee",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "gasRefundAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "JobCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "jobId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "executor",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "rewardAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "payment",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "JobExecuted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "previousAdminRole",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "newAdminRole",
+          "type": "bytes32"
+        }
+      ],
+      "name": "RoleAdminChanged",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        }
+      ],
+      "name": "RoleGranted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        }
+      ],
+      "name": "RoleRevoked",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        }
+      ],
+      "name": "TokenUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "verifier",
+          "type": "address"
+        }
+      ],
+      "name": "VerifierUpdated",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "ATTESTATION_MAX_AGE",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ATTESTATION_VERIFIER",
+      "outputs": [
+        {
+          "internalType": "contract IAttestationVerifier",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "DEFAULT_ADMIN_ROLE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "components": [
             {
+              "internalType": "address",
               "name": "validationAddress",
-              "type": "address",
-              "internalType": "address"
+              "type": "address"
             },
             {
+              "internalType": "bytes4",
               "name": "validationFunction",
-              "type": "bytes4",
-              "internalType": "bytes4"
+              "type": "bytes4"
+            },
+            {
+              "internalType": "bytes4",
+              "name": "initializerFunction",
+              "type": "bytes4"
+            },
+            {
+              "internalType": "bytes",
+              "name": "initializerData",
+              "type": "bytes"
             }
-          ]
+          ],
+          "internalType": "struct IJobManager.ValidationSetup[]",
+          "name": "_validations",
+          "type": "tuple[]"
         },
         {
-          "name": "paymentPerSecond",
-          "type": "uint256",
-          "indexed": false,
-          "internalType": "uint256"
+          "internalType": "string",
+          "name": "_enclave_url",
+          "type": "string"
         },
         {
-          "name": "maxBaseFee",
-          "type": "uint256",
-          "indexed": false,
-          "internalType": "uint256"
+          "components": [
+            {
+              "internalType": "bytes",
+              "name": "PCR0",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "PCR1",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "PCR2",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IJobManager.Image",
+          "name": "_pcrs",
+          "type": "tuple"
         },
         {
-          "name": "maxPriorityFee",
-          "type": "uint256",
-          "indexed": false,
-          "internalType": "uint256"
+          "internalType": "bytes",
+          "name": "_input",
+          "type": "bytes"
         },
         {
-          "name": "gasRefundAmount",
-          "type": "uint256",
-          "indexed": false,
-          "internalType": "uint256"
+          "internalType": "uint256",
+          "name": "_paymentPerSecond",
+          "type": "uint256"
         },
         {
-          "name": "amount",
-          "type": "uint256",
-          "indexed": false,
-          "internalType": "uint256"
+          "internalType": "uint256",
+          "name": "_maxBaseFee",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_maxPriorityFee",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_gasRefundAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
         }
       ],
-      "anonymous": false
+      "name": "createJob",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
     },
     {
-      "type": "event",
-      "name": "JobExecuted",
       "inputs": [
         {
+          "internalType": "uint256",
           "name": "jobId",
-          "type": "uint256",
-          "indexed": true,
-          "internalType": "uint256"
+          "type": "uint256"
         },
         {
-          "name": "executor",
-          "type": "address",
-          "indexed": true,
-          "internalType": "address"
-        },
-        {
-          "name": "rewardAddress",
-          "type": "address",
-          "indexed": true,
-          "internalType": "address"
-        },
-        {
-          "name": "payment",
-          "type": "uint256",
-          "indexed": false,
-          "internalType": "uint256"
-        },
-        {
+          "internalType": "bytes",
           "name": "data",
-          "type": "bytes",
-          "indexed": false,
-          "internalType": "bytes"
+          "type": "bytes"
+        },
+        {
+          "internalType": "address",
+          "name": "rewardAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes",
+          "name": "attestation",
+          "type": "bytes"
         }
       ],
-      "anonymous": false
+      "name": "executeJob",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-      "type": "event",
-      "name": "RoleAdminChanged",
       "inputs": [
         {
+          "internalType": "bytes32",
           "name": "role",
-          "type": "bytes32",
-          "indexed": true,
-          "internalType": "bytes32"
-        },
-        {
-          "name": "previousAdminRole",
-          "type": "bytes32",
-          "indexed": true,
-          "internalType": "bytes32"
-        },
-        {
-          "name": "newAdminRole",
-          "type": "bytes32",
-          "indexed": true,
-          "internalType": "bytes32"
+          "type": "bytes32"
         }
       ],
-      "anonymous": false
+      "name": "getRoleAdmin",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      "type": "event",
-      "name": "RoleGranted",
       "inputs": [
         {
+          "internalType": "bytes32",
           "name": "role",
-          "type": "bytes32",
-          "indexed": true,
-          "internalType": "bytes32"
+          "type": "bytes32"
         },
         {
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        }
+      ],
+      "name": "getRoleMember",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getRoleMemberCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_key",
+          "type": "address"
+        }
+      ],
+      "name": "getVerifiedKey",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_imageId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getWhitelistedImage",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes",
+              "name": "PCR0",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "PCR1",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "PCR2",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct AttestationAuther.EnclaveImage",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
           "name": "account",
-          "type": "address",
-          "indexed": true,
-          "internalType": "address"
-        },
-        {
-          "name": "sender",
-          "type": "address",
-          "indexed": true,
-          "internalType": "address"
+          "type": "address"
         }
       ],
-      "anonymous": false
+      "name": "grantRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-      "type": "event",
-      "name": "RoleRevoked",
       "inputs": [
         {
+          "internalType": "bytes32",
           "name": "role",
-          "type": "bytes32",
-          "indexed": true,
-          "internalType": "bytes32"
+          "type": "bytes32"
         },
         {
+          "internalType": "address",
           "name": "account",
-          "type": "address",
-          "indexed": true,
-          "internalType": "address"
+          "type": "address"
+        }
+      ],
+      "name": "hasRole",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "key",
+          "type": "address"
+        }
+      ],
+      "name": "isEnclaveKeyValid",
+      "outputs": [],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "imageId",
+          "type": "bytes32"
         },
         {
-          "name": "sender",
-          "type": "address",
-          "indexed": true,
-          "internalType": "address"
+          "internalType": "bytes32",
+          "name": "family",
+          "type": "bytes32"
         }
       ],
-      "anonymous": false
+      "name": "isImageInFamily",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      "type": "event",
-      "name": "TokenUpdated",
-      "inputs": [
+      "inputs": [],
+      "name": "jobCount",
+      "outputs": [
         {
-          "name": "token",
-          "type": "address",
-          "indexed": true,
-          "internalType": "address"
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         }
       ],
-      "anonymous": false
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      "type": "event",
-      "name": "VerifierUpdated",
       "inputs": [
         {
-          "name": "verifier",
-          "type": "address",
-          "indexed": true,
-          "internalType": "address"
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         }
       ],
-      "anonymous": false
+      "name": "jobs",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "creator",
+          "type": "address"
+        },
+        {
+          "components": [
+            {
+              "internalType": "bytes",
+              "name": "PCR0",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "PCR1",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "PCR2",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IJobManager.Image",
+          "name": "image",
+          "type": "tuple"
+        },
+        {
+          "internalType": "string",
+          "name": "enclave_url",
+          "type": "string"
+        },
+        {
+          "internalType": "bytes",
+          "name": "input",
+          "type": "bytes"
+        },
+        {
+          "internalType": "uint256",
+          "name": "paymentPerSecond",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "lastExecutionTime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "maxBaseFee",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "maxPriorityFee",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "gasRefundAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "renounceRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "revokeRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "interfaceId",
+          "type": "bytes4"
+        }
+      ],
+      "name": "supportsInterface",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "token",
+      "outputs": [
+        {
+          "internalType": "contract IERC20",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_token",
+          "type": "address"
+        }
+      ],
+      "name": "updateToken",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "signature",
+          "type": "bytes"
+        },
+        {
+          "components": [
+            {
+              "internalType": "bytes",
+              "name": "enclavePubKey",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "PCR0",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "PCR1",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "PCR2",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestampInMilliseconds",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IAttestationVerifier.Attestation",
+          "name": "attestation",
+          "type": "tuple"
+        }
+      ],
+      "name": "verifyEnclaveKey",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes",
+              "name": "PCR0",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "PCR1",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "PCR2",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct AttestationAuther.EnclaveImage",
+          "name": "image",
+          "type": "tuple"
+        }
+      ],
+      "name": "whitelistEnclaveImage",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "enclavePubKey",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "imageId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "whitelistEnclaveKey",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     }
   ],
   "bytecode": {
