@@ -10,6 +10,7 @@
     "compile": "./node_modules/.bin/hardhat compile",
     "node": "./node_modules/.bin/hardhat node",
     "start:server": "ts-node src/server.ts",
+    "start:scheduler": "ts-node src/scheduler.ts",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix"
   },

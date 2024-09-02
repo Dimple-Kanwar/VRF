@@ -1,9 +1,9 @@
 {
     "berachain": {
         "rpcUrl": "https://bartio.rpc.berachain.com",
-        "jobManagerContractAddress": "0x80bA8f9c5bAe2353EaB9620C64dAF9FcCc84C2Cc",
-        "vrfContractAddress": "0xE9b16ebe9Bb045509BF3C987A47fEb2fC59c8b9c",
-        "tokenAddress": "0x1f6dE477c23ea60136c6b441391e0Be926B49b09"
+        "jobManagerContractAddress": "0x1548c2b9a8b9264af460670664FB58303733c415",
+        "vrfContractAddress": "0x62d000D0C2d2e8a9022F0699802010eD52A12Ad2",
+        "tokenAddress": "0xB2EB01aD5C4324109F6891279Fda7eb842d2266c"
     },
     "bscTestnet": {
         "rpcUrl": "https://bsc-testnet-rpc.publicnode.com",
