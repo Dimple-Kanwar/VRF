@@ -1,6 +1,6 @@
 import hre from "hardhat";
 import { berachain } from "../constants.json";
-import { gasKey } from "../app/config.json";
+import { gasKey } from "/app/config.json";
 import { Wallet } from "ethers";
 
 const deployContracts = async () => {

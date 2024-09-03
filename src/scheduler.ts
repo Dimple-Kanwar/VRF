@@ -9,11 +9,11 @@ const jobId = config.jobId;
 
 schedule.scheduleJob(frequency, async () => {
   // run the job here
-  const { signer } = await getProviderDetails();
+  const { signer } = await getProviderDetails(config.gasKey);
   const userWallet = new Wallet(config.userKey);
   const { data } = await generateRandomness(userWallet);
   const execute_tx = await executeJob(jobId, data, signer, berachain.jobManagerContractAddress);
-  console.log("execute_tx: ", execute_tx?.hash)
+  console.log("execute_tx: ", execute_tx)
 });
 
 //graceful job shut down when a system interrupt occurs

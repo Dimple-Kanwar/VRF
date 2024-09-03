@@ -2,15 +2,15 @@ import AWS from 'aws-sdk';
 
 AWS.config.update({region: 'ap-south-1'});
 const cloudwatchLogs = new AWS.CloudWatchLogs({
-  accessKeyId: 'AKIATELF3O76WPYL2G5B',
-  secretAccessKey: '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'
+  accessKeyId: 'AKIA356SJZIG4BWKTPY5',
+  secretAccessKey: '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'
 });
 
 export  const sendLogMessage = async(message: string) => {
   try {
 
     const logGroupName = 'MyLogGroup';
-    const logStreamName = 'MyLogStream2';
+    const logStreamName = 'MyLogStream1';
     
     // Fetch the sequence token (if needed)
     let sequenceToken;

@@ -2,7 +2,7 @@ import { expect } from "chai";
 import hre, { ethers } from "hardhat";
 import { executeJob, generateRandomness } from "../src";
 import { readFileSync } from 'fs';
-import { BytesLike, Wallet } from "ethers";
+import { BigNumberish, BytesLike, Typed, Wallet } from "ethers";
 import { rewardsAddress } from "../src/app/config.json";
 import { JobManager, JobManager__factory, Token, Token__factory, VRF, VRF__factory } from "../typechain-types";
 import { berachain } from "../src/constants.json";
@@ -19,7 +19,8 @@ describe("VRF Berachain", function () {
   let tokenContract: Token;
   let enclave: Wallet;
   const abiCoder = ethers.AbiCoder.defaultAbiCoder();
-
+  let jobId: BigNumberish | Typed;
+  let randomWords: BytesLike | Typed;
   const pcrs: [BytesLike,BytesLike,BytesLike]= [
     "0x" + "00".repeat(47) + "65",
     "0x" + "00".repeat(47) + "36",
@@ -125,14 +126,32 @@ describe("VRF Berachain", function () {
     expect(jobId).to.equal(1);
   });
 
-  it.only("job not fulfilled", async function () {
+  it("job not fulfilled", async function () {
     const jobId = await JobManagerContract.jobCount();
     console.log({jobId});
     const res = await VRF.getRequestStatus(jobId);
     console.log({res});
     expect(res[0]).to.eql(false);
     expect(res[1]).to.eql('0x');
-});
+  });
 
+  it("setRandomWords", async function () {
+    const jobId = await JobManagerContract.jobCount();
+    console.log({jobId});
+    const {data, hashedRandomNum} = await generateRandomness(userAccount);
+    randomWords = hashedRandomNum;
+    const execute_tx = await executeJob(jobId, data, agent, berachain.jobManagerContractAddress);
+    console.log("execute_tx: ", execute_tx)
+  });
 
+  it("job fulfilled", async function () {
+      const res = await VRF.getRequestStatus(jobId);
+      expect(res[0]).to.eql(true);
+      expect(res[1]).to.eql(randomWords);
+  });
+
+  it("verify", async function () {
+    const isVerified = await VRF.connect(owner).verify(jobId, randomWords, userAccount.address);
+    expect(isVerified).true;
+  });
 });

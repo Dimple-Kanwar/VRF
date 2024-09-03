@@ -1,13 +1,13 @@
 import AWS from 'aws-sdk';
 AWS.config.update({region: 'ap-south-1'});
 const cloudwatchLogs = new AWS.CloudWatchLogs({
-    accessKeyId: 'AKIATELF3O76WPYL2G5B',
-    secretAccessKey: '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'});
+    accessKeyId: 'AKIA356SJZIG4BWKTPY5',
+    secretAccessKey: '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'});
 
 async function createLogGroupAndStream(logGroupName: string, logStreamName: string) {
   try {
     // Create Log Group
-    // await cloudwatchLogs.createLogGroup({ logGroupName }).promise();
+    await cloudwatchLogs.createLogGroup({ logGroupName }).promise();
     console.log(`Log group ${logGroupName} created.`);
 
     // Create Log Stream
