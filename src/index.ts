@@ -1,11 +1,10 @@
 
 import { ethers, getBytes, keccak256, toBeArray, Wallet } from 'ethers';
 import { readFileSync } from 'fs';
-import path from 'path';
 import "dotenv/config";
 import {sendLogMessage} from "./logger"
 import { berachain } from "./constants.json";
-import { gasKey, rewardsAddress } from "./app/config.json";
+import { rewardsAddress } from "/app/config.json";
 import { JobManager__factory } from '../typechain-types';
 const abiCoder = ethers.AbiCoder.defaultAbiCoder();
 
@@ -75,7 +74,7 @@ export const generateRandomness = async (userWallet: ethers.Wallet) => {
 
 export const executeJob = async (jobId: any, data: any, agent: ethers.ContractRunner, jobManagerAddress: string) => {
     
-    const attestation_private_key = readFileSync(path.join(__dirname, './app/secp.sec')).toString('hex');
+    const attestation_private_key = readFileSync('/app/secp.sec').toString('hex');
     const attestation = await getAttestation(data, jobId, attestation_private_key);
     const jobManagerContract = JobManager__factory.connect(jobManagerAddress, agent);
     return await jobManagerContract.executeJob(jobId, data, rewardsAddress, attestation)
@@ -89,6 +88,7 @@ export const executeJob = async (jobId: any, data: any, agent: ethers.ContractRu
         .catch((err) => {
             sendLogMessage(`Job execution failed. Err: ${JSON.stringify(err)}`);
             sendLogMessage(`Job execution failed. Err: ${err.message}`);
+            console.log(`Job execution failed. Err: ${err}`);
             return err.message;
         });
 }

@@ -14,9 +14,8 @@ contract VRF {
     }
 
     mapping(uint256 => RequestStatus) private s_requests; /* requestId --> requestStatus */
-
+    
     // past requests Id.
-    uint256[] public requestIds;
     uint256 public lastRequestId;
 
     constructor(address _owner) {
@@ -35,9 +34,10 @@ contract VRF {
 
     function init(uint256 _requestId, uint256 index, bytes memory _data) public onlyOwner returns (bool) {
         (address signer) = abi.decode(_data, (address));
+        RequestStatus memory requestStatus = s_requests[_requestId];
+        require(!requestStatus.exists,"Request Id already exists!"); 
         s_requests[_requestId] =
             RequestStatus({randomWords: "", signer: signer, signature: "", exists: true, fulfilled: false});
-        requestIds.push(_requestId);
         return true;
     }
 
@@ -47,30 +47,23 @@ contract VRF {
 
     // use initialize function args here
     function setRandomWords(uint256 _requestId, uint256 index, bytes memory _data)
-        public
-        onlyOwner
-        returns (uint256 requestId)
+        public onlyOwner
+        returns (bool success)
     {
-        require(s_requests[_requestId].exists, "request not found");
+        RequestStatus memory requestStatus = s_requests[_requestId];
+        require(requestStatus.exists, "request not found");
+        require(!requestStatus.fulfilled, "Request already fullfilled");
         (bytes memory _randomWords, bytes memory _signature, address signer) =
             abi.decode(_data, (bytes, bytes, address));
         bytes32 messageHash = getMessageHash(_randomWords);
-        console.log("messageHash: ");
-        console.logBytes32(messageHash);
-
         bytes32 ethSignedMessageHash = getEthSignedMessageHash(messageHash);
-        console.log("ethSignedMessageHash: ");
-        console.logBytes32(ethSignedMessageHash);
         require(recoverSigner(ethSignedMessageHash, _signature) == signer, "Signer mismatch");
-        s_requests[_requestId] = RequestStatus({
-            randomWords: _randomWords,
-            signer: signer,
-            signature: _signature,
-            exists: true,
-            fulfilled: true
-        });
+        requestStatus.fulfilled = true;
+        requestStatus.randomWords = _randomWords;
+        requestStatus.signature = _signature;
+        s_requests[_requestId] = requestStatus;
         lastRequestId = _requestId;
-        return _requestId; // requestID is a uint.
+        return true;
     }
 
     function getEthSignedMessageHash(bytes32 _messageHash) private pure returns (bytes32) {
@@ -116,9 +109,8 @@ contract VRF {
         bytes memory _randomWords,
         address _signer
     ) public view returns (bool) {
-        require(s_requests[_requestId].exists, "request not found");
         RequestStatus memory request = s_requests[_requestId];
-
+        require(request.exists, "request not found");
         bytes32 messageHash = getMessageHash(_randomWords);
         bytes32 ethSignedMessageHash = getEthSignedMessageHash(messageHash);
         if (recoverSigner(ethSignedMessageHash, request.signature) != _signer) {
@@ -132,5 +124,12 @@ contract VRF {
         require(s_requests[_requestId].exists, "request not found");
         RequestStatus memory request = s_requests[_requestId];
         return (request.fulfilled, request.randomWords);
+    }
+
+    // get request details
+    function getRequestDetails(uint256 _requestId) public view returns (RequestStatus memory) {
+        RequestStatus memory request = s_requests[_requestId];
+        require(request.exists, "request not found");
+        return request;
     }
 }

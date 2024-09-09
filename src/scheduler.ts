@@ -3,7 +3,8 @@ import { executeJob, generateRandomness, getProviderDetails } from '.';
 import { readFileSync } from 'fs';
 import { berachain } from "./constants.json";
 import { Wallet } from 'ethers';
-const config = JSON.parse(readFileSync("./app/config.json", { encoding: "utf8" }));
+import path from 'path';
+const config = JSON.parse(readFileSync("/app/config.json", { encoding: "utf8" }));
 const frequency = config.frequency;
 const jobId = config.jobId;
 

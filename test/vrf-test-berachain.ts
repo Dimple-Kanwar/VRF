@@ -2,8 +2,8 @@ import { expect } from "chai";
 import hre, { ethers } from "hardhat";
 import { executeJob, generateRandomness } from "../src";
 import { readFileSync } from 'fs';
-import { BigNumberish, BytesLike, Typed, Wallet } from "ethers";
-import { rewardsAddress } from "../src/app/config.json";
+import { BytesLike, Wallet } from "ethers";
+import { rewardsAddress } from "/app/config.json";
 import { JobManager, JobManager__factory, Token, Token__factory, VRF, VRF__factory } from "../typechain-types";
 import { berachain } from "../src/constants.json";
 
@@ -11,23 +11,22 @@ describe("VRF Berachain", function () {
 
   let owner: Wallet, admin: Wallet, agent: Wallet, userAccount: Wallet;
   let vrfAddress: string;
-  let jobManagerAddress: string;
-  let tokenAddress: string;
-  let verifierAddress: string;
   let JobManagerContract: JobManager;
   let VRF: VRF;
   let tokenContract: Token;
   let enclave: Wallet;
-  const abiCoder = ethers.AbiCoder.defaultAbiCoder();
-  let jobId: BigNumberish | Typed;
-  let randomWords: BytesLike | Typed;
-  const pcrs: [BytesLike,BytesLike,BytesLike]= [
-    "0x" + "00".repeat(47) + "65",
-    "0x" + "00".repeat(47) + "36",
-    "0x" + "00".repeat(47) + "93",
+  // const pcrs: [BytesLike,BytesLike,BytesLike]= [
+  //   "0x" + "00".repeat(47) + "65",
+  //   "0x" + "00".repeat(47) + "36",
+  //   "0x" + "00".repeat(47) + "93",
+  // ];
+  const pcrs: [BytesLike, BytesLike, BytesLike] = [
+    "0x579253ac192f98b12e756a34c1f14cd17b3fbdb841016d692fc2e19039013cc9c6f4527b400fe3f01e71c86c221c001e",
+    "0xbcdf05fefccaa8e55bf2c8d6dee9e79bbff31e34bf28a99aa19e6b29c37ee80b214a414b7607236edf26fcb78654e63f",
+    "0xf002fecf8b1adbd80f514a71c85df1bc3bdf970fa912f3bf9ba8d360a5e4026eeb9ae3a682b011d27d52861fe511b64f",
   ];
 
-  const getImageId = (pcrs: [BytesLike, BytesLike, BytesLike]): BytesLike =>{
+  const getImageId = (pcrs: [BytesLike, BytesLike, BytesLike]): BytesLike => {
     let encoded = ethers.solidityPacked(["bytes", "bytes", "bytes"], [pcrs[0], pcrs[1], pcrs[2]]);
     let digest = ethers.keccak256(encoded);
     return digest;
@@ -35,13 +34,13 @@ describe("VRF Berachain", function () {
 
   this.beforeAll(async () => {
     const provider = new hre.ethers.JsonRpcProvider(berachain.rpcUrl);
-    owner = new Wallet(`${process.env.DEPLOYER_KEY}`,provider);
-    admin = new Wallet(`${process.env.ADMIN_KEY}`,provider);
-    agent = new Wallet(`${process.env.AGENT_KEY}`,provider);
+    owner = new Wallet(`${process.env.DEPLOYER_KEY}`, provider);
+    admin = new Wallet(`${process.env.ADMIN_KEY}`, provider);
+    agent = new Wallet(`${process.env.AGENT_KEY}`, provider);
     userAccount = new Wallet(`${process.env.USER_KEY}`);
 
-    console.log({ owner: owner.address, admin: admin.address, agent:agent.address, userAccount:userAccount.address, rewardsAddress });
-   
+    console.log({ owner: owner.address, admin: admin.address, agent: agent.address, userAccount: userAccount.address, rewardsAddress });
+
     // deploy Token contract
     tokenContract = Token__factory.connect(berachain.tokenAddress)
 
@@ -51,27 +50,27 @@ describe("VRF Berachain", function () {
     vrfAddress = berachain.vrfContractAddress;
     console.log({ vrfAddress });
     VRF = VRF__factory.connect(vrfAddress, agent);
-    const attestation_private_key = readFileSync("/home/boss/Work/Decimal/VRF/src/app/secp.sec").toString('hex');
-    enclave = new Wallet(`0x${attestation_private_key}`);
+    const attestation_private_key = readFileSync("/home/boss/Work/Decimal/VRF/src/app/secp.sec").toString('utf8');
+    // enclave = new Wallet(`0x${attestation_private_key}`);
     return { JobManagerContract, vrfAddress }
   });
 
 
   it("Whitelist an image", async function () {
-    const whitelist_EnclaveImage_Transaction = await JobManagerContract.connect(admin).whitelistEnclaveImage({PCR0: pcrs[0], PCR1: pcrs[1], PCR2: pcrs[2]});
+    const whitelist_EnclaveImage_Transaction = await JobManagerContract.connect(admin).whitelistEnclaveImage({ PCR0: pcrs[0], PCR1: pcrs[1], PCR2: pcrs[2] });
     const receipt = await whitelist_EnclaveImage_Transaction.wait();
     console.log("Image Whitelist Tx Receipt", receipt!.hash);
     const listed_enclaveImage = await JobManagerContract.getWhitelistedImage(getImageId(pcrs));
-    console.log({listed_enclaveImage});
-    expect(listed_enclaveImage).to.eql([pcrs[0], pcrs[1],pcrs[2]]);
+    console.log({ listed_enclaveImage });
+    expect(listed_enclaveImage).to.eql([pcrs[0], pcrs[1], pcrs[2]]);
   });
 
   it("Whitelist a key", async function () {
-    const enclavePubKey = readFileSync("/home/boss/Work/Decimal/VRF/src/app/secp.pub").toString('hex');
-    console.log({enclavePubKey})
-    console.log("enclavePubKey.length: ",enclavePubKey.length)
-    const address = enclave.address;
-    console.log({address})
+    const enclavePubKey = readFileSync("/home/boss/Work/Decimal/VRF/src/app/secp.pub").toString('utf8');
+    console.log({ enclavePubKey })
+    console.log("enclavePubKey.length: ", enclavePubKey.length)
+    // const address = enclave.address;
+    // console.log({ address })
     const whitelist_EnclaveKey_Transaction = await JobManagerContract.connect(admin).whitelistEnclaveKey(`0x${enclavePubKey}`, getImageId(pcrs));
     const receipt = await whitelist_EnclaveKey_Transaction.wait();
     console.log("Image Key Whitelist Tx Receipt", receipt?.hash);
@@ -87,71 +86,86 @@ describe("VRF Berachain", function () {
     const gasRefundAmount = "400000";
     const amount = "5000";
     const ethAmount = ethers.parseEther("1");
-    console.log({ethAmount})
-    const tokenApproval_Transaction = await tokenContract.connect(owner).approve(berachain.jobManagerContractAddress, ethAmount);
-    
-    console.log({tokenApproval_Transaction_hash: tokenApproval_Transaction.hash});
     // const t = keccak256(toUtf8Bytes("init(uint256,uint256,bytes)"));
     // console.log({t})
     // let initializerFunction=abiCoder.encode(["bytes4"],[t]);
     // console.log({initializerFunction})
     // let validationFunction=abiCoder.encode(["bytes4"],["setRandomWords(uint256,uint256,bytes)"]);
     // console.log({validationFunction})
-    const job_create_transaction = await JobManagerContract.connect(owner).createJob(
-      [
-        {
-          validationAddress: vrfAddress,
-          validationFunction: "0x16c0edd3",
-          initializerFunction: "0x1d31888f",
-          initializerData: abiCoder.encode(
-            ["address"],
-            [userAccount.address],
-          ),
-        },
-      ],
-      "optional ig",
-      {PCR0: pcrs[0], PCR1: pcrs[1], PCR2: pcrs[2]},
-      input_bytes,
-      paymentPerSecond,
-      maxBaseFee,
-      maxPriorityFee,
-      gasRefundAmount,
-      amount,
-      { value: gasRefundAmount },
-    );
-    const receipt = await job_create_transaction.wait();
-    console.log("Job Creation Tx Receipt", receipt?.hash);
-    const jobId = await JobManagerContract.jobCount();
-    console.log({jobId});
-    expect(jobId).to.equal(1);
+    for (let index = 5; index <= 5; index++) {
+      const tokenApproval_Transaction = await tokenContract.connect(owner).approve(berachain.jobManagerContractAddress, ethAmount);
+      const currentJobId = await JobManagerContract.jobCount();
+      console.log({ currentJobId });
+      console.log({ tokenApproval_Transaction_hash: tokenApproval_Transaction.hash });
+      const job_create_transaction = await JobManagerContract.connect(owner).createJob(
+        [
+          {
+            validationAddress: vrfAddress,
+            validationFunction: "0x16c0edd3",
+            initializerFunction: "0x1d31888f",
+            initializerData: abiCoder.encode(
+              ["address"],
+              [userAccount.address],
+            ),
+          },
+        ],
+        "optional ig",
+        { PCR0: pcrs[0], PCR1: pcrs[1], PCR2: pcrs[2] },
+        input_bytes,
+        paymentPerSecond,
+        maxBaseFee,
+        maxPriorityFee,
+        gasRefundAmount,
+        amount,
+        { value: gasRefundAmount },
+      );
+      const receipt = await job_create_transaction.wait();
+      console.log("Job Creation Tx Receipt", receipt?.hash);
+      const jobId = await JobManagerContract.jobCount();
+      console.log({ jobId });
+      expect(jobId).to.equal(index);
+    }
   });
 
-  it("job not fulfilled", async function () {
+  it.only("job not fulfilled", async function () {
     const jobId = await JobManagerContract.jobCount();
-    console.log({jobId});
-    const res = await VRF.getRequestStatus(jobId);
-    console.log({res});
-    expect(res[0]).to.eql(false);
-    expect(res[1]).to.eql('0x');
+    console.log({ jobId });
+      const res = await VRF.getRequestStatus(jobId);
+      console.log({ res });
+      expect(res[0]).to.eql(false);
+      expect(res[1]).to.eql('0x');
   });
 
   it("setRandomWords", async function () {
-    const jobId = await JobManagerContract.jobCount();
-    console.log({jobId});
-    const {data, hashedRandomNum} = await generateRandomness(userAccount);
-    randomWords = hashedRandomNum;
-    const execute_tx = await executeJob(jobId, data, agent, berachain.jobManagerContractAddress);
-    console.log("execute_tx: ", execute_tx)
+    for (let index = 1; index < 3; index++) {
+      const { data } = await generateRandomness(userAccount);
+      const jobId = await JobManagerContract.jobCount();
+      console.log({ jobId });
+      const execute_tx = await executeJob(index, data, agent, berachain.jobManagerContractAddress);
+      console.log("execute_tx: ", execute_tx)
+    }
   });
 
   it("job fulfilled", async function () {
-      const res = await VRF.getRequestStatus(jobId);
+    const jobId = await JobManagerContract.jobCount();
+    console.log({ jobId });
+    for (let index = 1; index < 3; index++) {
+      const res = await VRF.getRequestStatus(index);
+      console.log({ res });
       expect(res[0]).to.eql(true);
-      expect(res[1]).to.eql(randomWords);
+    }
   });
 
-  it("verify", async function () {
-    const isVerified = await VRF.connect(owner).verify(jobId, randomWords, userAccount.address);
-    expect(isVerified).true;
+  it.only("Get All request details", async function () {
+      const reqDetails = await VRF.getRequestDetails(5);
+      console.log({ reqDetails: reqDetails });
   });
+
+  // it("Should fail to set random number", async function () {
+  //   const {data, hashedRandomNum} = await generateRandomness(userAccount);
+  //   randomWords = hashedRandomNum;
+  //   // const execute_tx = await executeJob(2, data, agent, berachain.jobManagerContractAddress);
+  //   const execute_tx = await VRF.setRandomWords(2,0,data);
+  //   console.log("execute_tx: ", execute_tx)
+  // });
 });

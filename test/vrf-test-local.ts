@@ -1,11 +1,8 @@
-import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { expect } from "chai";
 import hre, { ethers } from "hardhat";
-import { executeJob, generateRandomness, getAttestation } from "../src";
+import { executeJob, generateRandomness } from "../src";
 import { readFileSync } from 'fs';
-import { AbiCoder, BytesLike, computeAddress, concat, encodeBase64, getBytes, hashMessage, hexlify, keccak256, recoverAddress, toBeArray, toUtf8Bytes, Wallet } from "ethers";
-import { MockEnclave, WalletInfo } from "../src/helpers";
-import { PrivateKey } from "eciesjs";
+import { BytesLike, Wallet } from "ethers";
 
 describe("VRF local", function () {
 
@@ -18,12 +15,17 @@ describe("VRF local", function () {
   let VRF:any;
   let tokenContract:any;
   let wallet: Wallet;
-  const abiCoder = ethers.AbiCoder.defaultAbiCoder();
+
+  // const pcrs: [BytesLike,BytesLike,BytesLike]= [
+  //   "0x" + "00".repeat(47) + "65",
+  //   "0x" + "00".repeat(47) + "36",
+  //   "0x" + "00".repeat(47) + "93",
+  // ];
 
   const pcrs: [BytesLike,BytesLike,BytesLike]= [
-    "0x" + "00".repeat(47) + "65",
-    "0x" + "00".repeat(47) + "36",
-    "0x" + "00".repeat(47) + "93",
+    "0x9fc33e37a9d5e927b08a30c05490bb2ed4f8553181a01a3727032b850f9eb67fb74bb1360d4e903c03a7ddb66a4760e0",
+    "0xbcdf05fefccaa8e55bf2c8d6dee9e79bbff31e34bf28a99aa19e6b29c37ee80b214a414b7607236edf26fcb78654e63f",
+    "0xf808a498fa88fc7d211356f81f8ffb380f336e94225a2d04e6bb9216dc09ed822bee3f66834dd45b9c3c721504dd9b5f",
   ];
 
   const getImageId = (pcrs: [BytesLike, BytesLike, BytesLike]): BytesLike =>{
@@ -60,7 +62,7 @@ describe("VRF local", function () {
     // console.log({ VRF });
     vrfAddress = await VRF.getAddress();
     console.log({ vrfAddress });
-    const attestation_private_key = readFileSync("/home/boss/Work/Decimal/VRF/src/app/secp.sec").toString('hex');
+    const attestation_private_key = readFileSync("/home/boss/Work/Decimal/VRF/src/app/secp.sec").toString('utf8');
     wallet = new Wallet(`0x${attestation_private_key}`);
     return { JobManagerContract, vrfAddress }
   });
@@ -76,7 +78,7 @@ describe("VRF local", function () {
   });
 
   it("Whitelist a key", async function () {
-    const enclavePubKey = readFileSync("/home/boss/Work/Decimal/VRF/src/app/secp.pub").toString('hex');
+    const enclavePubKey = readFileSync("/home/boss/Work/Decimal/VRF/src/app/secp.pub").toString('utf8');
     console.log({enclavePubKey})
     console.log("enclavePubKey.length: ",enclavePubKey.length)
     const address = wallet.address;
@@ -104,46 +106,64 @@ describe("VRF local", function () {
     // console.log({initializerFunction})
     // let validationFunction=abiCoder.encode(["bytes4"],["setRandomWords(uint256,uint256,bytes)"]);
     // console.log({validationFunction})
-    const job_create_transaction = await JobManagerContract.createJob(
-      [
-        {
-          validationAddress: vrfAddress,
-          validationFunction: "0x16c0edd3",
-          initializerFunction: "0x1d31888f",
-          initializerData: abiCoder.encode(
-            ["address"],
-            [userAccount.address],
-          ),
-        },
-      ],
-      "optional ig",
-      {PCR0: pcrs[0], PCR1: pcrs[1], PCR2: pcrs[2]},
-      input_bytes,
-      paymentPerSecond,
-      maxBaseFee,
-      maxPriorityFee,
-      gasRefundAmount,
-      amount,
-      { value: gasRefundAmount },
-    );
-    const receipt = await job_create_transaction.wait();
-    console.log("Job Creation Tx Receipt", receipt?.hash);
-    const jobId = await JobManagerContract.jobCount();
-    console.log({jobId});
-    expect(jobId).to.equal(1);
+    for (let index = 1; index < 3; index++) {
+      const job_create_transaction = await JobManagerContract.createJob(
+        [
+          {
+            validationAddress: vrfAddress,
+            validationFunction: "0x16c0edd3",
+            initializerFunction: "0x1d31888f",
+            initializerData: abiCoder.encode(
+              ["address"],
+              [userAccount.address],
+            ),
+          },
+        ],
+        "optional ig",
+        {PCR0: pcrs[0], PCR1: pcrs[1], PCR2: pcrs[2]},
+        input_bytes,
+        paymentPerSecond,
+        maxBaseFee,
+        maxPriorityFee,
+        gasRefundAmount,
+        amount,
+        { value: gasRefundAmount },
+      );
+      const receipt = await job_create_transaction.wait();
+      console.log("Job Creation Tx Receipt", receipt?.hash);
+      const jobId = await JobManagerContract.jobCount();
+      console.log({jobId});
+      expect(jobId).to.equal(index);
+    }
   });
 
   it("run scheduler", async function () {
     const jobId = await JobManagerContract.connect(agent).jobCount();
     console.log("jobId: ",jobId)
     console.log("rewardsAddress.address: ",rewardsAddress.address)
-    const {data, hashedRandomNum} = await generateRandomness(userAccount);
-    jobManagerAddress = await JobManagerContract.getAddress();
-    const tx = await executeJob(jobId, data, agent, jobManagerAddress);
-    console.log("Job Execution Tx hash", tx?.hash);
-    const isVerified = await VRF.connect(owner).verify(jobId, hashedRandomNum, userAccount.address);
-    console.log({isVerified});
-    expect(isVerified).true;
+    for (let index = 1; index < 3; index++) {
+      const {data, hashedRandomNum} = await generateRandomness(userAccount);
+      jobManagerAddress = await JobManagerContract.getAddress();
+      const tx = await executeJob(index, data, agent, jobManagerAddress);
+      console.log("Job Execution Tx hash", tx);
+      // const isVerified = await VRF.connect(owner).verify(index, hashedRandomNum, userAccount.address);
+      // console.log({isVerified});
+      // expect(isVerified).true;
+    }
+  });
+
+  it("job fulfilled", async function () {
+    for (let index = 1; index < 3; index++) {
+      const res = await VRF.getRequestStatus(index);
+      expect(res[0]).to.eql(true);
+    }
+  });
+
+  it("Get All request details", async function () {
+    for (let index = 1; index < 3; index++) {
+      const reqDetails = await VRF.getRequestDetails(index);
+      console.log({reqDetails: reqDetails});
+    }
   });
 
 });

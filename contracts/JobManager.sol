@@ -152,7 +152,7 @@ contract JobManager is IJobManager, AttestationAuther, AccessControlEnumerable {
             attestation
         );
         isEnclaveKeyValid(enclaveKey);
-       
+       console.log("valid enclave key");
         // check if job validations are met
         for(uint256 i = 0; i < job.validations.length; i++) {
             (bool success, bytes memory result) = job.validations[i].validationAddress.call(abi.encodeWithSelector(
@@ -168,20 +168,28 @@ contract JobManager is IJobManager, AttestationAuther, AccessControlEnumerable {
             require(abi.decode(result, (bool)), "Validation check failed");
         }
         // execute job
+        console.log("VRF execution done");
         uint256 _payment = job.paymentPerSecond*(block.timestamp - job.lastExecutionTime);
+        console.log("payment: ", _payment);
         uint256 _balance = token.balanceOf(address(this));
+        console.log("_balance: ", _balance);
         if(job.amount > _payment) {
+            console.log("if : ");
             job.amount -= _payment;
         } else {
+            console.log("else : ");
             delete job.amount;
         }
         job.lastExecutionTime = block.timestamp;
+        console.log("job.lastExecutionTime: ", job.lastExecutionTime);
         emit JobExecuted(jobCount, msg.sender, rewardAddress, job.paymentPerSecond, data);
-
+        console.log("_balance: ", _balance);
         if(_balance == 0) return;
         if(_balance > _payment) {
+            console.log("_balance > _payment: ", _balance > _payment);
             token.transfer(rewardAddress, _payment);
         } else {
+            console.log("else _balance > _payment: ", _balance > _payment);
             token.transfer(rewardAddress, _balance);
         }
     }
