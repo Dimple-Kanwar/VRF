@@ -1,7 +1,0 @@
-{
-    "jobId": 4,
-    "rewardsAddress": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-    "gasKey": "0xeadb3c33fd141accd8be3e7ee1aba9cba310dfa76a7a6d9f770deb57af30cdc2",
-    "frequency": "*/1 * * * *",
-    "userKey": "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"
-}
